@@ -15,3 +15,25 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+/JvmAcquirer/build
+/JvmAcquirer/cmake-build-debug-visual-studio
+/JvmAcquirer/cmake-build-minsizerel-visual-studio
+/JvmAcquirer/cmake-build-release-visual-studio
+/JvmAcquirer/cmake-build-relwithdebinfo-visual-studio
+
+/NativeHandler/build
+/NativeHandler/cmake-build-debug-visual-studio
+/NativeHandler/cmake-build-minsizerel-visual-studio
+/NativeHandler/cmake-build-release-visual-studio
+/NativeHandler/cmake-build-relwithdebinfo-visual-studio
