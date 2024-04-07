@@ -2,6 +2,8 @@
 // Created by Administrator on 2024/3/14.
 //
 
+#include "jnif/jnif.hpp"
+
 #include "main.h"
 
 #include <filesystem>
@@ -47,18 +49,29 @@ std::unique_ptr<java_interop::debug_accessor> debug_accessor;
 
 extern "C" {
 JNIEXPORT jbyteArray JNICALL Java_un_defined_Breakpoint_getMethodBytecode
-        (JNIEnv *, jclass, jclass, jstring, jstring);
+        (JNIEnv *, jclass, jstring, jstring, jstring);
 
 JNIEXPORT void JNICALL  Java_un_defined_Breakpoint_loadJar
         (JNIEnv * env, jclass, jstring jarPath);
 }
 
-jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv * env, jclass, jclass clz, jstring methodName, jstring methodSign) {
 
+
+
+jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv * env, jclass, jbyteArray classBytes, jstring methodName, jstring methodSign) {
+
+    auto bytes = env->GetByteArrayElements(classBytes, 0);
+    auto len = env->GetArrayLength(classBytes);
+    jnif::ClassFile cf{};
+    jnif::parser::ClassFileParser::parse(reinterpret_cast<const jnif::u1*>(bytes), len, &cf);
+    for (auto &method : cf.methods)
+    {
+        method.instList();
+    }
     auto name = env->GetStringUTFChars(methodName,0);
     auto sign = env->GetStringUTFChars(methodSign,0);
     std::string comp(std::string (name) + std::string (sign));
-    auto klass = java_interop::get_instance_class(clz);
+    /*auto klass = java_interop::get_instance_class(clz);
     auto methodArray = klass->get_methods();
     auto methods = methodArray->get_data();
     for (int index = 0;index < methodArray->get_length();index ++){
@@ -73,7 +86,7 @@ jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv * env, jclass, jc
         auto result = env->NewByteArray(size);
         env->SetByteArrayRegion(result, 0, size, reinterpret_cast<const jbyte *>(code.data()));
         return result;
-    }
+    }*/
     return nullptr;
 }
 

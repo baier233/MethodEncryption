@@ -17,16 +17,18 @@ include_directories(
         library
         library/jni
         library/detours
+        jnif
 )
 
 file(GLOB_RECURSE LIBS library/**.lib)
-file(GLOB_RECURSE INCLUDES include/**.h)
+file(GLOB_RECURSE INCLUDES include/**.h include/**.hpp)
 file(GLOB_RECURSE SOURCES
         source/**.cpp
         library/**.cpp
         source/**.asm
         library/**.asm
         include/**.asm
+        jnif/**.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED

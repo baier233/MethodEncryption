@@ -55,15 +55,13 @@ public class LinkMethodConstantPool extends NamePipe {
         lastClassReader = tuple.getSecond();
         lastClassNode = classNode;
 
-        this.getClass().getClassLoader();
-        Class<?> klass = Class.forName(classNode.name.replaceAll("/", "."));
-
         System.out.println("Defined classNode.name = " + classNode.name);
         boolean shouldProcessclinit = false;
         InsnList instructions = new InsnList();
         instructions.add(new LdcInsnNode(Type.getObjectType(classNode.name)));
         instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,"me/baier/NativeHandler", "register", "(Ljava/lang/Class;)V", false));
         for (MethodNode method : classNode.methods) {
+
 
             if (!ClassMethodFilter.shouldProcess(classNode, method)) {
                 continue;
@@ -74,7 +72,7 @@ public class LinkMethodConstantPool extends NamePipe {
                 method.invisibleAnnotations.removeIf(annotationNode -> annotationNode.desc.equals(Breakpoint.INSTANCE.getSettings().getANNOTATION_DESC()));
             }
             System.out.println("Encrypting Method: " + method.name + " Desc: " + method.desc + " ....");
-            byte[] methodOpcodes = Breakpoint.getMethodBytecode(klass, method.name, method.desc);
+            byte[] methodOpcodes = Breakpoint.getMethodBytecode(classNode.name, method.name, method.desc);
             System.out.println("Generate Opcodes List for :" +method.name + method.desc);
             List<String> opcodes = classOpcodeMap.computeIfAbsent(new Tuple<>(method.name,method.desc), k -> new ArrayList<>());
             for (byte opcode : methodOpcodes) {

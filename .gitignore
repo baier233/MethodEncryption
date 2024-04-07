@@ -37,3 +37,7 @@ _deps
 /NativeHandler/cmake-build-minsizerel-visual-studio
 /NativeHandler/cmake-build-release-visual-studio
 /NativeHandler/cmake-build-relwithdebinfo-visual-studio
+/JvmAcquirer/.vs
+/JvmAcquirer/out
+/NativeHandler/out
+/NativeHandler/.vs

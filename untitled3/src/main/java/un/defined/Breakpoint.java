@@ -158,7 +158,7 @@ public class Breakpoint {
         outputZipFile.close();
     }
 
-    public static native byte[] getMethodBytecode(Class<?> targetClass, String methodName, String methodDesc);
+    public static native byte[] getMethodBytecode(String className, String methodName, String methodDesc);
     public static native void loadJar(String jarPath);
 
 }
