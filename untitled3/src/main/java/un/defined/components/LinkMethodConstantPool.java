@@ -4,6 +4,7 @@ import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 import un.defined.Breakpoint;
+import un.defined.config.Settings;
 import un.defined.entity.NamePipe;
 import un.defined.entity.Tuple;
 import un.defined.utility.ClassMethodFilter;
@@ -69,7 +70,9 @@ public class LinkMethodConstantPool extends NamePipe {
             shouldProcessclinit = true;
 
             if (Breakpoint.INSTANCE.getSettings().isREMOVE_ANNOTATION()) {
-                method.invisibleAnnotations.removeIf(annotationNode -> annotationNode.desc.equals(Breakpoint.INSTANCE.getSettings().getANNOTATION_DESC()));
+
+                if (method.invisibleAnnotations != null)
+                    method.invisibleAnnotations.removeIf(annotationNode -> annotationNode.desc.equals(Breakpoint.INSTANCE.getSettings().getANNOTATION_DESC()));
             }
             System.out.println("Encrypting Method: " + method.name + " Desc: " + method.desc + " ....");
             byte[] methodOpcodes = Breakpoint.getMethodBytecode(classNode.name, method.name, method.desc);
@@ -117,6 +120,13 @@ public class LinkMethodConstantPool extends NamePipe {
                     break;
             }
         }
+
+        if(Breakpoint.INSTANCE.getSettings().isREMOVE_ANNOTATION()){
+            if (classNode.invisibleAnnotations != null)
+                classNode.invisibleAnnotations.removeIf(annotationNode -> annotationNode.desc.equals(Breakpoint.INSTANCE.getSettings().getANNOTATION_DESC()));
+
+        }
+
         if (shouldProcessclinit){
             MethodNode clinit = classNode.methods.stream().filter(methodNode -> "<clinit>".equals(methodNode.name)
                     && "()V".equals(methodNode.desc)).findAny().orElse(null);

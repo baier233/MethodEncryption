@@ -129,7 +129,7 @@ public class Breakpoint {
                 }
                 writerFlag = ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES;
                 for (Pipe pipeLine : pipeLines) {
-                    pipeLine.process(this, tuple);
+                    Objects.requireNonNull(pipeLine).process(this, tuple);
                 }
                 ClassWriter classWriter = new ClassWriter(writerFlag);
                 ClassNode classNode = tuple.getFirst();

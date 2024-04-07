@@ -6,7 +6,8 @@ set(CMAKE_CXX_STANDARD 20)
 enable_language( ASM_MASM )
 
 
-add_compile_options( "/MP" )
+add_compile_options( "/Od")
+add_compile_options( "/MP")
 
 include_directories(
         include

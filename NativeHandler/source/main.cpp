@@ -477,117 +477,8 @@ JNI_OnLoad(JavaVM *vm, void *reserved){
 #endif
 
 #ifdef NativeHandler
-
+#include "header.hpp"
 #endif
-
-#include <functional>
-#include <vector>
-#include <string>
-const std::vector me_baier_AES_Encrypt_opcode = {
-        static_cast<uint8_t>(0x2B),// 0
-        static_cast<uint8_t>(0xC7),// 1
-        static_cast<uint8_t>(0x00),// 2
-        static_cast<uint8_t>(0x0D),// 3
-        static_cast<uint8_t>(0xB2),// 4
-        static_cast<uint8_t>(0x01),// 5
-        static_cast<uint8_t>(0x00),// 6
-        static_cast<uint8_t>(0xE6),// 7
-        static_cast<uint8_t>(0x00),// 8
-        static_cast<uint8_t>(0xB6),// 9
-        static_cast<uint8_t>(0x02),// 10
-        static_cast<uint8_t>(0x00),// 11
-        static_cast<uint8_t>(0x01),// 12
-        static_cast<uint8_t>(0xB0),// 13
-        static_cast<uint8_t>(0x2B),// 14
-        static_cast<uint8_t>(0xB6),// 15
-        static_cast<uint8_t>(0x03),// 16
-        static_cast<uint8_t>(0x00),// 17
-        static_cast<uint8_t>(0x10),// 18
-        static_cast<uint8_t>(0x10),// 19
-        static_cast<uint8_t>(0x9F),// 20
-        static_cast<uint8_t>(0x00),// 21
-        static_cast<uint8_t>(0x0D),// 22
-        static_cast<uint8_t>(0xB2),// 23
-        static_cast<uint8_t>(0x01),// 24
-        static_cast<uint8_t>(0x00),// 25
-        static_cast<uint8_t>(0xE6),// 26
-        static_cast<uint8_t>(0x01),// 27
-        static_cast<uint8_t>(0xB6),// 28
-        static_cast<uint8_t>(0x02),// 29
-        static_cast<uint8_t>(0x00),// 30
-        static_cast<uint8_t>(0x01),// 31
-        static_cast<uint8_t>(0xB0),// 32
-        static_cast<uint8_t>(0x2B),// 33
-        static_cast<uint8_t>(0xB6),// 34
-        static_cast<uint8_t>(0x04),// 35
-        static_cast<uint8_t>(0x00),// 36
-        static_cast<uint8_t>(0x4D),// 37
-        static_cast<uint8_t>(0xBB),// 38
-        static_cast<uint8_t>(0x00),// 39
-        static_cast<uint8_t>(0x08),// 40
-        static_cast<uint8_t>(0x59),// 41
-        static_cast<uint8_t>(0x2C),// 42
-        static_cast<uint8_t>(0xE6),// 43
-        static_cast<uint8_t>(0x02),// 44
-        static_cast<uint8_t>(0xB7),// 45
-        static_cast<uint8_t>(0x05),// 46
-        static_cast<uint8_t>(0x00),// 47
-        static_cast<uint8_t>(0x4E),// 48
-        static_cast<uint8_t>(0xE6),// 49
-        static_cast<uint8_t>(0x03),// 50
-        static_cast<uint8_t>(0xB8),// 51
-        static_cast<uint8_t>(0x06),// 52
-        static_cast<uint8_t>(0x00),// 53
-        static_cast<uint8_t>(0x3A),// 54
-        static_cast<uint8_t>(0x04),// 55
-        static_cast<uint8_t>(0xBB),// 56
-        static_cast<uint8_t>(0x00),// 57
-        static_cast<uint8_t>(0x0D),// 58
-        static_cast<uint8_t>(0x59),// 59
-        static_cast<uint8_t>(0xE6),// 60
-        static_cast<uint8_t>(0x04),// 61
-        static_cast<uint8_t>(0xB6),// 62
-        static_cast<uint8_t>(0x04),// 63
-        static_cast<uint8_t>(0x00),// 64
-        static_cast<uint8_t>(0xB7),// 65
-        static_cast<uint8_t>(0x07),// 66
-        static_cast<uint8_t>(0x00),// 67
-        static_cast<uint8_t>(0x3A),// 68
-        static_cast<uint8_t>(0x05),// 69
-        static_cast<uint8_t>(0x19),// 70
-        static_cast<uint8_t>(0x04),// 71
-        static_cast<uint8_t>(0x04),// 72
-        static_cast<uint8_t>(0x2D),// 73
-        static_cast<uint8_t>(0x19),// 74
-        static_cast<uint8_t>(0x05),// 75
-        static_cast<uint8_t>(0xB6),// 76
-        static_cast<uint8_t>(0x08),// 77
-        static_cast<uint8_t>(0x00),// 78
-        static_cast<uint8_t>(0x19),// 79
-        static_cast<uint8_t>(0x04),// 80
-        static_cast<uint8_t>(0x2A),// 81
-        static_cast<uint8_t>(0xB6),// 82
-        static_cast<uint8_t>(0x04),// 83
-        static_cast<uint8_t>(0x00),// 84
-        static_cast<uint8_t>(0xB6),// 85
-        static_cast<uint8_t>(0x09),// 86
-        static_cast<uint8_t>(0x00),// 87
-        static_cast<uint8_t>(0x3A),// 88
-        static_cast<uint8_t>(0x06),// 89
-        static_cast<uint8_t>(0x19),// 90
-        static_cast<uint8_t>(0x06),// 91
-        static_cast<uint8_t>(0xB8),// 92
-        static_cast<uint8_t>(0x0A),// 93
-        static_cast<uint8_t>(0x00),// 94
-        static_cast<uint8_t>(0xB6),// 95
-        static_cast<uint8_t>(0x0B),// 96
-        static_cast<uint8_t>(0x00),// 97
-        static_cast<uint8_t>(0xB0),// 98
-};
-inline auto InitMethods(const std::function<void(const std::string& class_name,const std::string& method_name,const std::vector<uint8_t>& opcode)>& inject)
-{
-    inject("me/baier/AES","Encrypt(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;",me_baier_AES_Encrypt_opcode);
-}
 
 #ifdef NativeHandler
 
@@ -598,7 +489,7 @@ void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
     {
         auto instance_klass = java_interop::get_instance_class(klass);
         if (instance_klass->get_name()->to_string() != class_name){
-            throw std::runtime_error("Unable to match class name!");
+            return;
         }
 
         const auto methods = instance_klass->get_methods();
@@ -632,9 +523,10 @@ void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
             }
 
 
-            BEGIN_LOG("ok\n");
-            FLUSH
+            
+        
         }
+        return;
     };
     InitMethods(inject);
 }

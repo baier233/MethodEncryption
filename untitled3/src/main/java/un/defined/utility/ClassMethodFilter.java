@@ -8,6 +8,8 @@ import un.defined.Breakpoint;
 public class ClassMethodFilter {
     public static boolean shouldProcess(ClassNode classNode,MethodNode methodNode) {
 
+        if (methodNode.name.equals("<clinit>") ||methodNode.name.equals("<init>") ||methodNode.name.equals("main") ) return false;
+
         if ((classNode.invisibleAnnotations != null &&
                 classNode.invisibleAnnotations.stream().anyMatch(annotationNode ->
                         annotationNode.desc.equals(Breakpoint.INSTANCE.getSettings().getANNOTATION_DESC()))) || (classNode.visibleTypeAnnotations != null &&
