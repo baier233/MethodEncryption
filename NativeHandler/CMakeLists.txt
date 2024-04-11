@@ -21,7 +21,8 @@ include_directories(
 )
 
 file(GLOB_RECURSE LIBS library/**.lib)
-file(GLOB_RECURSE INCLUDES include/**.h)
+file(GLOB_RECURSE INCLUDES include/**.h 
+                           include/**.hpp)
 file(GLOB_RECURSE SOURCES
         source/**.cpp
         library/**.cpp
