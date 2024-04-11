@@ -17,6 +17,7 @@ extern "C" {
 uintptr_t __forceinline jhook_get_r14_address();
 uintptr_t __forceinline jhook_get_r13_address();
 void __forceinline jhook_set_r13_address(void* value);
+uintptr_t _forceinline jhook_get_rbp_address();
 }
 
 

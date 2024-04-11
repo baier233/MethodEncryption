@@ -3,98 +3,6 @@
 #include <functional>
 #include <vector>
 #include <string>
-const std::vector me_baier_AES_byte2hex_opcode = {
-    static_cast<uint8_t>(0xE6),// 0
-    static_cast<uint8_t>(0x05),// 1
-    static_cast<uint8_t>(0x4C),// 2
-    static_cast<uint8_t>(0xE6),// 3
-    static_cast<uint8_t>(0x05),// 4
-    static_cast<uint8_t>(0x4D),// 5
-    static_cast<uint8_t>(0x03),// 6
-    static_cast<uint8_t>(0x3E),// 7
-    static_cast<uint8_t>(0x1D),// 8
-    static_cast<uint8_t>(0x2A),// 9
-    static_cast<uint8_t>(0xBE),// 10
-    static_cast<uint8_t>(0xA2),// 11
-    static_cast<uint8_t>(0x00),// 12
-    static_cast<uint8_t>(0x4A),// 13
-    static_cast<uint8_t>(0x2A),// 14
-    static_cast<uint8_t>(0x1D),// 15
-    static_cast<uint8_t>(0x33),// 16
-    static_cast<uint8_t>(0x11),// 17
-    static_cast<uint8_t>(0x00),// 18
-    static_cast<uint8_t>(0xFF),// 19
-    static_cast<uint8_t>(0x7E),// 20
-    static_cast<uint8_t>(0xB8),// 21
-    static_cast<uint8_t>(0x14),// 22
-    static_cast<uint8_t>(0x00),// 23
-    static_cast<uint8_t>(0x4D),// 24
-    static_cast<uint8_t>(0x2C),// 25
-    static_cast<uint8_t>(0xB6),// 26
-    static_cast<uint8_t>(0x03),// 27
-    static_cast<uint8_t>(0x00),// 28
-    static_cast<uint8_t>(0x04),// 29
-    static_cast<uint8_t>(0xA0),// 30
-    static_cast<uint8_t>(0x00),// 31
-    static_cast<uint8_t>(0x1E),// 32
-    static_cast<uint8_t>(0xBB),// 33
-    static_cast<uint8_t>(0x00),// 34
-    static_cast<uint8_t>(0x20),// 35
-    static_cast<uint8_t>(0x59),// 36
-    static_cast<uint8_t>(0xB7),// 37
-    static_cast<uint8_t>(0x15),// 38
-    static_cast<uint8_t>(0x00),// 39
-    static_cast<uint8_t>(0x2B),// 40
-    static_cast<uint8_t>(0xB6),// 41
-    static_cast<uint8_t>(0x16),// 42
-    static_cast<uint8_t>(0x00),// 43
-    static_cast<uint8_t>(0xE6),// 44
-    static_cast<uint8_t>(0x06),// 45
-    static_cast<uint8_t>(0xB6),// 46
-    static_cast<uint8_t>(0x16),// 47
-    static_cast<uint8_t>(0x00),// 48
-    static_cast<uint8_t>(0x2C),// 49
-    static_cast<uint8_t>(0xB6),// 50
-    static_cast<uint8_t>(0x16),// 51
-    static_cast<uint8_t>(0x00),// 52
-    static_cast<uint8_t>(0xB6),// 53
-    static_cast<uint8_t>(0x17),// 54
-    static_cast<uint8_t>(0x00),// 55
-    static_cast<uint8_t>(0x4C),// 56
-    static_cast<uint8_t>(0xA7),// 57
-    static_cast<uint8_t>(0x00),// 58
-    static_cast<uint8_t>(0x16),// 59
-    static_cast<uint8_t>(0xBB),// 60
-    static_cast<uint8_t>(0x00),// 61
-    static_cast<uint8_t>(0x20),// 62
-    static_cast<uint8_t>(0x59),// 63
-    static_cast<uint8_t>(0xB7),// 64
-    static_cast<uint8_t>(0x15),// 65
-    static_cast<uint8_t>(0x00),// 66
-    static_cast<uint8_t>(0x2B),// 67
-    static_cast<uint8_t>(0xB6),// 68
-    static_cast<uint8_t>(0x16),// 69
-    static_cast<uint8_t>(0x00),// 70
-    static_cast<uint8_t>(0x2C),// 71
-    static_cast<uint8_t>(0xB6),// 72
-    static_cast<uint8_t>(0x16),// 73
-    static_cast<uint8_t>(0x00),// 74
-    static_cast<uint8_t>(0xB6),// 75
-    static_cast<uint8_t>(0x17),// 76
-    static_cast<uint8_t>(0x00),// 77
-    static_cast<uint8_t>(0x4C),// 78
-    static_cast<uint8_t>(0x84),// 79
-    static_cast<uint8_t>(0x03),// 80
-    static_cast<uint8_t>(0x01),// 81
-    static_cast<uint8_t>(0xA7),// 82
-    static_cast<uint8_t>(0xFF),// 83
-    static_cast<uint8_t>(0xB6),// 84
-    static_cast<uint8_t>(0x2B),// 85
-    static_cast<uint8_t>(0xB6),// 86
-    static_cast<uint8_t>(0x18),// 87
-    static_cast<uint8_t>(0x00),// 88
-    static_cast<uint8_t>(0xB0),// 89
-};
 const std::vector me_baier_AES_hex2byte_opcode = {
     static_cast<uint8_t>(0x2A),// 0
     static_cast<uint8_t>(0xC7),// 1
@@ -163,10 +71,10 @@ const std::vector me_baier_AES_hex2byte_opcode = {
 };
 const std::vector me_baier_AES_mainWrap_opcode = {
     static_cast<uint8_t>(0xE6),// 0
-    static_cast<uint8_t>(0x07),// 1
+    static_cast<uint8_t>(0x06),// 1
     static_cast<uint8_t>(0x4B),// 2
     static_cast<uint8_t>(0xE6),// 3
-    static_cast<uint8_t>(0x08),// 4
+    static_cast<uint8_t>(0x07),// 4
     static_cast<uint8_t>(0x4C),// 5
     static_cast<uint8_t>(0xB2),// 6
     static_cast<uint8_t>(0x01),// 7
@@ -176,157 +84,95 @@ const std::vector me_baier_AES_mainWrap_opcode = {
     static_cast<uint8_t>(0x11),// 11
     static_cast<uint8_t>(0x00),// 12
     static_cast<uint8_t>(0xB8),// 13
-    static_cast<uint8_t>(0x19),// 14
+    static_cast<uint8_t>(0x16),// 14
     static_cast<uint8_t>(0x00),// 15
     static_cast<uint8_t>(0x41),// 16
     static_cast<uint8_t>(0x2B),// 17
     static_cast<uint8_t>(0x2A),// 18
     static_cast<uint8_t>(0xB8),// 19
-    static_cast<uint8_t>(0x1A),// 20
+    static_cast<uint8_t>(0x17),// 20
     static_cast<uint8_t>(0x00),// 21
     static_cast<uint8_t>(0x3A),// 22
     static_cast<uint8_t>(0x04),// 23
     static_cast<uint8_t>(0xB2),// 24
     static_cast<uint8_t>(0x01),// 25
     static_cast<uint8_t>(0x00),// 26
-    static_cast<uint8_t>(0xBB),// 27
-    static_cast<uint8_t>(0x00),// 28
-    static_cast<uint8_t>(0x20),// 29
-    static_cast<uint8_t>(0x59),// 30
-    static_cast<uint8_t>(0xB7),// 31
-    static_cast<uint8_t>(0x15),// 32
-    static_cast<uint8_t>(0x00),// 33
-    static_cast<uint8_t>(0xE6),// 34
-    static_cast<uint8_t>(0x09),// 35
-    static_cast<uint8_t>(0xB6),// 36
-    static_cast<uint8_t>(0x16),// 37
-    static_cast<uint8_t>(0x00),// 38
-    static_cast<uint8_t>(0x19),// 39
-    static_cast<uint8_t>(0x04),// 40
-    static_cast<uint8_t>(0xB6),// 41
-    static_cast<uint8_t>(0x16),// 42
-    static_cast<uint8_t>(0x00),// 43
-    static_cast<uint8_t>(0xB6),// 44
-    static_cast<uint8_t>(0x17),// 45
+    static_cast<uint8_t>(0x19),// 27
+    static_cast<uint8_t>(0x04),// 28
+    static_cast<uint8_t>(0xBA),// 29
+    static_cast<uint8_t>(0xE2),// 30
+    static_cast<uint8_t>(0xFF),// 31
+    static_cast<uint8_t>(0xFF),// 32
+    static_cast<uint8_t>(0xFF),// 33
+    static_cast<uint8_t>(0xB6),// 34
+    static_cast<uint8_t>(0x11),// 35
+    static_cast<uint8_t>(0x00),// 36
+    static_cast<uint8_t>(0xB8),// 37
+    static_cast<uint8_t>(0x16),// 38
+    static_cast<uint8_t>(0x00),// 39
+    static_cast<uint8_t>(0x20),// 40
+    static_cast<uint8_t>(0x65),// 41
+    static_cast<uint8_t>(0x37),// 42
+    static_cast<uint8_t>(0x05),// 43
+    static_cast<uint8_t>(0xB2),// 44
+    static_cast<uint8_t>(0x01),// 45
     static_cast<uint8_t>(0x00),// 46
-    static_cast<uint8_t>(0xB6),// 47
-    static_cast<uint8_t>(0x11),// 48
-    static_cast<uint8_t>(0x00),// 49
-    static_cast<uint8_t>(0xB8),// 50
-    static_cast<uint8_t>(0x19),// 51
-    static_cast<uint8_t>(0x00),// 52
-    static_cast<uint8_t>(0x20),// 53
-    static_cast<uint8_t>(0x65),// 54
-    static_cast<uint8_t>(0x37),// 55
-    static_cast<uint8_t>(0x05),// 56
-    static_cast<uint8_t>(0xB2),// 57
-    static_cast<uint8_t>(0x01),// 58
+    static_cast<uint8_t>(0x16),// 47
+    static_cast<uint8_t>(0x05),// 48
+    static_cast<uint8_t>(0xBA),// 49
+    static_cast<uint8_t>(0xE1),// 50
+    static_cast<uint8_t>(0xFF),// 51
+    static_cast<uint8_t>(0xFF),// 52
+    static_cast<uint8_t>(0xFF),// 53
+    static_cast<uint8_t>(0xB6),// 54
+    static_cast<uint8_t>(0x11),// 55
+    static_cast<uint8_t>(0x00),// 56
+    static_cast<uint8_t>(0xB8),// 57
+    static_cast<uint8_t>(0x16),// 58
     static_cast<uint8_t>(0x00),// 59
-    static_cast<uint8_t>(0xBB),// 60
-    static_cast<uint8_t>(0x00),// 61
-    static_cast<uint8_t>(0x20),// 62
-    static_cast<uint8_t>(0x59),// 63
-    static_cast<uint8_t>(0xB7),// 64
-    static_cast<uint8_t>(0x15),// 65
+    static_cast<uint8_t>(0x41),// 60
+    static_cast<uint8_t>(0x19),// 61
+    static_cast<uint8_t>(0x04),// 62
+    static_cast<uint8_t>(0x2A),// 63
+    static_cast<uint8_t>(0xB8),// 64
+    static_cast<uint8_t>(0x18),// 65
     static_cast<uint8_t>(0x00),// 66
-    static_cast<uint8_t>(0xE6),// 67
-    static_cast<uint8_t>(0x0A),// 68
-    static_cast<uint8_t>(0xB6),// 69
-    static_cast<uint8_t>(0x16),// 70
+    static_cast<uint8_t>(0x3A),// 67
+    static_cast<uint8_t>(0x07),// 68
+    static_cast<uint8_t>(0xB2),// 69
+    static_cast<uint8_t>(0x01),// 70
     static_cast<uint8_t>(0x00),// 71
-    static_cast<uint8_t>(0x16),// 72
-    static_cast<uint8_t>(0x05),// 73
-    static_cast<uint8_t>(0xB6),// 74
-    static_cast<uint8_t>(0x1B),// 75
-    static_cast<uint8_t>(0x00),// 76
-    static_cast<uint8_t>(0xE6),// 77
-    static_cast<uint8_t>(0x0B),// 78
+    static_cast<uint8_t>(0x19),// 72
+    static_cast<uint8_t>(0x07),// 73
+    static_cast<uint8_t>(0xBA),// 74
+    static_cast<uint8_t>(0xE0),// 75
+    static_cast<uint8_t>(0xFF),// 76
+    static_cast<uint8_t>(0xFF),// 77
+    static_cast<uint8_t>(0xFF),// 78
     static_cast<uint8_t>(0xB6),// 79
-    static_cast<uint8_t>(0x16),// 80
+    static_cast<uint8_t>(0x11),// 80
     static_cast<uint8_t>(0x00),// 81
-    static_cast<uint8_t>(0xB6),// 82
-    static_cast<uint8_t>(0x17),// 83
+    static_cast<uint8_t>(0xB8),// 82
+    static_cast<uint8_t>(0x16),// 83
     static_cast<uint8_t>(0x00),// 84
-    static_cast<uint8_t>(0xB6),// 85
-    static_cast<uint8_t>(0x11),// 86
-    static_cast<uint8_t>(0x00),// 87
-    static_cast<uint8_t>(0xB8),// 88
-    static_cast<uint8_t>(0x19),// 89
-    static_cast<uint8_t>(0x00),// 90
-    static_cast<uint8_t>(0x41),// 91
-    static_cast<uint8_t>(0x19),// 92
-    static_cast<uint8_t>(0x04),// 93
-    static_cast<uint8_t>(0x2A),// 94
-    static_cast<uint8_t>(0xB8),// 95
-    static_cast<uint8_t>(0x1C),// 96
-    static_cast<uint8_t>(0x00),// 97
-    static_cast<uint8_t>(0x3A),// 98
-    static_cast<uint8_t>(0x07),// 99
-    static_cast<uint8_t>(0xB2),// 100
-    static_cast<uint8_t>(0x01),// 101
-    static_cast<uint8_t>(0x00),// 102
-    static_cast<uint8_t>(0xBB),// 103
-    static_cast<uint8_t>(0x00),// 104
-    static_cast<uint8_t>(0x20),// 105
-    static_cast<uint8_t>(0x59),// 106
-    static_cast<uint8_t>(0xB7),// 107
-    static_cast<uint8_t>(0x15),// 108
-    static_cast<uint8_t>(0x00),// 109
-    static_cast<uint8_t>(0xE6),// 110
-    static_cast<uint8_t>(0x0C),// 111
-    static_cast<uint8_t>(0xB6),// 112
-    static_cast<uint8_t>(0x16),// 113
-    static_cast<uint8_t>(0x00),// 114
-    static_cast<uint8_t>(0x19),// 115
-    static_cast<uint8_t>(0x07),// 116
-    static_cast<uint8_t>(0xB6),// 117
-    static_cast<uint8_t>(0x16),// 118
-    static_cast<uint8_t>(0x00),// 119
-    static_cast<uint8_t>(0xB6),// 120
-    static_cast<uint8_t>(0x17),// 121
-    static_cast<uint8_t>(0x00),// 122
-    static_cast<uint8_t>(0xB6),// 123
-    static_cast<uint8_t>(0x11),// 124
-    static_cast<uint8_t>(0x00),// 125
-    static_cast<uint8_t>(0xB8),// 126
-    static_cast<uint8_t>(0x19),// 127
-    static_cast<uint8_t>(0x00),// 128
-    static_cast<uint8_t>(0x20),// 129
-    static_cast<uint8_t>(0x65),// 130
-    static_cast<uint8_t>(0x37),// 131
-    static_cast<uint8_t>(0x05),// 132
-    static_cast<uint8_t>(0xB2),// 133
-    static_cast<uint8_t>(0x01),// 134
-    static_cast<uint8_t>(0x00),// 135
-    static_cast<uint8_t>(0xBB),// 136
-    static_cast<uint8_t>(0x00),// 137
-    static_cast<uint8_t>(0x20),// 138
-    static_cast<uint8_t>(0x59),// 139
-    static_cast<uint8_t>(0xB7),// 140
-    static_cast<uint8_t>(0x15),// 141
-    static_cast<uint8_t>(0x00),// 142
-    static_cast<uint8_t>(0xE6),// 143
-    static_cast<uint8_t>(0x0D),// 144
-    static_cast<uint8_t>(0xB6),// 145
-    static_cast<uint8_t>(0x16),// 146
-    static_cast<uint8_t>(0x00),// 147
-    static_cast<uint8_t>(0x16),// 148
-    static_cast<uint8_t>(0x05),// 149
-    static_cast<uint8_t>(0xB6),// 150
-    static_cast<uint8_t>(0x1B),// 151
-    static_cast<uint8_t>(0x00),// 152
-    static_cast<uint8_t>(0xE6),// 153
-    static_cast<uint8_t>(0x0B),// 154
-    static_cast<uint8_t>(0xB6),// 155
-    static_cast<uint8_t>(0x16),// 156
-    static_cast<uint8_t>(0x00),// 157
-    static_cast<uint8_t>(0xB6),// 158
-    static_cast<uint8_t>(0x17),// 159
-    static_cast<uint8_t>(0x00),// 160
-    static_cast<uint8_t>(0xB6),// 161
-    static_cast<uint8_t>(0x11),// 162
-    static_cast<uint8_t>(0x00),// 163
-    static_cast<uint8_t>(0xB1),// 164
+    static_cast<uint8_t>(0x20),// 85
+    static_cast<uint8_t>(0x65),// 86
+    static_cast<uint8_t>(0x37),// 87
+    static_cast<uint8_t>(0x05),// 88
+    static_cast<uint8_t>(0xB2),// 89
+    static_cast<uint8_t>(0x01),// 90
+    static_cast<uint8_t>(0x00),// 91
+    static_cast<uint8_t>(0x16),// 92
+    static_cast<uint8_t>(0x05),// 93
+    static_cast<uint8_t>(0xBA),// 94
+    static_cast<uint8_t>(0xDF),// 95
+    static_cast<uint8_t>(0xFF),// 96
+    static_cast<uint8_t>(0xFF),// 97
+    static_cast<uint8_t>(0xFF),// 98
+    static_cast<uint8_t>(0xB6),// 99
+    static_cast<uint8_t>(0x11),// 100
+    static_cast<uint8_t>(0x00),// 101
+    static_cast<uint8_t>(0xB1),// 102
 };
 const std::vector me_baier_AES_Encrypt_opcode = {
     static_cast<uint8_t>(0x2B),// 0
@@ -566,12 +412,77 @@ const std::vector me_baier_AES_Decrypt_opcode = {
     static_cast<uint8_t>(0x01),// 133
     static_cast<uint8_t>(0xB0),// 134
 };
+const std::vector me_baier_AES_byte2hex_opcode = {
+    static_cast<uint8_t>(0xE6),// 0
+    static_cast<uint8_t>(0x05),// 1
+    static_cast<uint8_t>(0x4C),// 2
+    static_cast<uint8_t>(0xE6),// 3
+    static_cast<uint8_t>(0x05),// 4
+    static_cast<uint8_t>(0x4D),// 5
+    static_cast<uint8_t>(0x03),// 6
+    static_cast<uint8_t>(0x3E),// 7
+    static_cast<uint8_t>(0x1D),// 8
+    static_cast<uint8_t>(0x2A),// 9
+    static_cast<uint8_t>(0xBE),// 10
+    static_cast<uint8_t>(0xA2),// 11
+    static_cast<uint8_t>(0x00),// 12
+    static_cast<uint8_t>(0x2F),// 13
+    static_cast<uint8_t>(0x2A),// 14
+    static_cast<uint8_t>(0x1D),// 15
+    static_cast<uint8_t>(0x33),// 16
+    static_cast<uint8_t>(0x11),// 17
+    static_cast<uint8_t>(0x00),// 18
+    static_cast<uint8_t>(0xFF),// 19
+    static_cast<uint8_t>(0x7E),// 20
+    static_cast<uint8_t>(0xB8),// 21
+    static_cast<uint8_t>(0x14),// 22
+    static_cast<uint8_t>(0x00),// 23
+    static_cast<uint8_t>(0x4D),// 24
+    static_cast<uint8_t>(0x2C),// 25
+    static_cast<uint8_t>(0xB6),// 26
+    static_cast<uint8_t>(0x03),// 27
+    static_cast<uint8_t>(0x00),// 28
+    static_cast<uint8_t>(0x04),// 29
+    static_cast<uint8_t>(0xA0),// 30
+    static_cast<uint8_t>(0x00),// 31
+    static_cast<uint8_t>(0x0E),// 32
+    static_cast<uint8_t>(0x2B),// 33
+    static_cast<uint8_t>(0x2C),// 34
+    static_cast<uint8_t>(0xBA),// 35
+    static_cast<uint8_t>(0xE4),// 36
+    static_cast<uint8_t>(0xFF),// 37
+    static_cast<uint8_t>(0xFF),// 38
+    static_cast<uint8_t>(0xFF),// 39
+    static_cast<uint8_t>(0x4C),// 40
+    static_cast<uint8_t>(0xA7),// 41
+    static_cast<uint8_t>(0x00),// 42
+    static_cast<uint8_t>(0x0B),// 43
+    static_cast<uint8_t>(0x2B),// 44
+    static_cast<uint8_t>(0x2C),// 45
+    static_cast<uint8_t>(0xBA),// 46
+    static_cast<uint8_t>(0xE3),// 47
+    static_cast<uint8_t>(0xFF),// 48
+    static_cast<uint8_t>(0xFF),// 49
+    static_cast<uint8_t>(0xFF),// 50
+    static_cast<uint8_t>(0x4C),// 51
+    static_cast<uint8_t>(0x84),// 52
+    static_cast<uint8_t>(0x03),// 53
+    static_cast<uint8_t>(0x01),// 54
+    static_cast<uint8_t>(0xA7),// 55
+    static_cast<uint8_t>(0xFF),// 56
+    static_cast<uint8_t>(0xD1),// 57
+    static_cast<uint8_t>(0x2B),// 58
+    static_cast<uint8_t>(0xB6),// 59
+    static_cast<uint8_t>(0x15),// 60
+    static_cast<uint8_t>(0x00),// 61
+    static_cast<uint8_t>(0xB0),// 62
+};
 inline auto InitMethods(const std::function<void(const std::string& class_name, const std::string& method_name, const std::vector<uint8_t>& opcode)> inject)
 {
-    inject("me/baier/AES", "byte2hex([B)Ljava/lang/String;", me_baier_AES_byte2hex_opcode);
     inject("me/baier/AES", "hex2byte(Ljava/lang/String;)[B", me_baier_AES_hex2byte_opcode);
     inject("me/baier/AES", "mainWrap()V", me_baier_AES_mainWrap_opcode);
     inject("me/baier/AES", "Encrypt(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", me_baier_AES_Encrypt_opcode);
     inject("me/baier/AES", "Decrypt(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", me_baier_AES_Decrypt_opcode);
+    inject("me/baier/AES", "byte2hex([B)Ljava/lang/String;", me_baier_AES_byte2hex_opcode);
 }
 #endif //CLASSES_H

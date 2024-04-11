@@ -21,7 +21,7 @@
 #include "jvm_break_points.h"
 #include "vm_helper.h"
 
-//#define  ENABLELOG
+#define  ENABLELOG
 
 #ifdef ENABLELOG
 
@@ -58,20 +58,21 @@ JNIEXPORT void JNICALL  Java_un_defined_Breakpoint_loadJar
 
 
 
-jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv * env, jclass, jbyteArray classBytes, jstring methodName, jstring methodSign) {
+jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv* env, jclass, jstring className , jstring methodName, jstring methodSign) {
 
-    auto bytes = env->GetByteArrayElements(classBytes, 0);
+    /*auto bytes = env->GetByteArrayElements(classBytes, 0);
     auto len = env->GetArrayLength(classBytes);
     jnif::ClassFile cf{};
     jnif::parser::ClassFileParser::parse(reinterpret_cast<const jnif::u1*>(bytes), len, &cf);
     for (auto &method : cf.methods)
     {
         method.instList();
-    }
+    }*/
+    auto clz = env->FindClass(env->GetStringUTFChars(className, 0));
     auto name = env->GetStringUTFChars(methodName,0);
     auto sign = env->GetStringUTFChars(methodSign,0);
     std::string comp(std::string (name) + std::string (sign));
-    /*auto klass = java_interop::get_instance_class(clz);
+    auto klass = java_interop::get_instance_class(clz);
     auto methodArray = klass->get_methods();
     auto methods = methodArray->get_data();
     for (int index = 0;index < methodArray->get_length();index ++){
@@ -86,7 +87,7 @@ jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv * env, jclass, jb
         auto result = env->NewByteArray(size);
         env->SetByteArrayRegion(result, 0, size, reinterpret_cast<const jbyte *>(code.data()));
         return result;
-    }*/
+    }
     return nullptr;
 }
 
@@ -131,6 +132,7 @@ auto InitGlobalOffsets() -> void {
     }
 
     /* java_lang_Class -> _klass_offset */
+    std::cout << "Klass Offset:" << global_offsets::klass_offset << std::endl;
     global_offsets::klass_offset = *static_cast<jint *>(java_lang_Class.value().get()["_klass_offset"]->address);
     java_hotspot::bytecode_start_offset = java_hotspot::const_method::get_const_method_length();
 }

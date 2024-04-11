@@ -19,7 +19,7 @@
 #include "jvm_break_points.h"
 #include "vm_helper.h"
 
-//#define  ENABLELOG
+#define  ENABLELOG
 
 #ifdef ENABLELOG
 
@@ -482,7 +482,8 @@ JNI_OnLoad(JavaVM *vm, void *reserved){
 
 #ifdef NativeHandler
 
-void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
+static void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
+    BEGIN_LOG("Enter Register") END_LOG
     auto inject = [&](const std::string& class_name,
                      const std::string& method_name,
                      const std::vector<uint8_t>& opcode)
@@ -491,7 +492,7 @@ void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
         if (instance_klass->get_name()->to_string() != class_name){
             return;
         }
-
+        BEGIN_LOG("Resolving Class For :" << class_name) END_LOG
         const auto methods = instance_klass->get_methods();
         const auto data = methods->get_data();
         const auto length = methods->get_length();
@@ -515,8 +516,11 @@ void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
                 info->set_next(holder_klass->get_breakpoints());
                 holder_klass->set_breakpoints(info);
 
-                jvm_break_points::set_breakpoint_with_original_code(method,0,opcode[0],[&opcode](break_point_info * info) -> void {
-                    jhook_set_r13_address((void*)opcode.data());
+                jvm_break_points::set_breakpoint_with_original_code(method, 0, opcode[0], [&opcode](break_point_info* info) -> void {
+                    jhook_set_r13_address((void*)(opcode.data()));
+                    BEGIN_LOG (info->method->get_name()) END_LOG
+                    MessageBox(0, 0, 0, 0);
+                    return;
                 });
 
                 //method->hide_byte_codes(opcode);
@@ -532,7 +536,7 @@ void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
 }
 
 
-void InitNativeHandler(){
+static void InitNativeHandler(){
     auto env = debug_accessor->get_env();
     auto klass = env->FindClass("me/baier/NativeHandler");
     if(!klass) throw std::runtime_error("Unable to find nativeHandler");
@@ -541,7 +545,8 @@ void InitNativeHandler(){
             {(char*)"register", (char*)"(Ljava/lang/Class;)V", (void *) &register_method},
     };
 
-    env->RegisterNatives(klass,table,sizeof(table) / sizeof(JNINativeMethod));
+    auto err = env->RegisterNatives(klass,table,sizeof(table) / sizeof(JNINativeMethod));
+    BEGIN_LOG("Err :" << err)  END_LOG;
 
 }
 

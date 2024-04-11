@@ -2,6 +2,8 @@
 // Created by Administrator on 2024/3/15.
 //
 
+#define DEBUGGER
+
 #include "vm_helper.h"
 #include "memory_utility.h"
 
@@ -12,7 +14,13 @@ auto vm_helper::find_vm_calls(PVOID start) -> std::vector<PVOID> {
     const auto start_addr = reinterpret_cast<uintptr_t>(start);
     const uintptr_t end_addr = start_addr + max_len;
     auto call_pattern = const_cast<char *>(vm_call_pattern.c_str());
+    auto restore_register_pattern = const_cast<char *>(vm_call_restore_register_pattern.c_str());
 
+
+    restore_register_addr = scan(restore_register_pattern, start_addr, end_addr);
+#ifdef DEBUGGER
+    std::cout << "Restore_register_addr :" << (void*)restore_register_addr << std::endl;
+#endif // DEBUGGER
 
     uintptr_t vm_call_addr = scan(call_pattern, start_addr, end_addr);
     if (!vm_call_addr) {
