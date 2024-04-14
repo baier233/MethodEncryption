@@ -223,11 +223,11 @@ public class LinkMethodConstantPool extends NamePipe {
                 for (Tuple<String,String> methodNameAndSig : methodOpcodeMap.keySet()) {
 
                     String methodName = methodNameAndSig.getFirst() + methodNameAndSig.getSecond();
-                    methodName = methodName.replaceAll("/", "_").replaceAll(";", "_")
+                    String methodNameReplace = methodName.replaceAll("/", "_").replaceAll(";", "_")
                             .replace("(", "_").replace(")", "_")
                             .replace("[", "_");
 
-                    String opcodeVarName = className.replaceAll("/", "_") + "_" + methodName ;
+                    String opcodeVarName = className.replaceAll("/", "_") + "_" + methodNameReplace ;
                     List<String> opcodes = methodOpcodeMap.get(methodNameAndSig);
 
                     StringBuilder stringBuilder = new StringBuilder();
@@ -241,7 +241,7 @@ public class LinkMethodConstantPool extends NamePipe {
                     stringBuilder.append("\n};");
                     stringBuilder.append("\n");
                     header.append(stringBuilder);
-                    initMethods.append("    inject(\"").append(className).append("\",\"").append(methodName).append(methodNameAndSig.getSecond()).append("\",").append(opcodeVarName).append(");\n");
+                    initMethods.append("    inject(\"").append(className).append("\",\"").append(methodName).append("\",").append(opcodeVarName).append(");\n");
 
                 }
             }

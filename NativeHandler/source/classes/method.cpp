@@ -208,8 +208,7 @@ auto java_hotspot::method::hide_byte_codes(std::vector<uint8_t> fake_opcodes) ->
         const auto original_length = bytecode->get_length();
         //std::cout << "0x" << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(bytecode->get_opcode())
           //        << " -> " << std::dec << bytecode->get_length() << std::endl;
-        jvm_break_points::set_breakpoint_with_original_code(this, hide_size,fake_opcodes[hide_size], [](auto *) -> void {
-            std::cout << "Hi" << std::endl;
+        jvm_break_points::set_breakpoint(this, hide_size, [](auto *) -> void {
         });
         hide_size += original_length;
     }

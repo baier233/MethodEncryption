@@ -272,209 +272,7 @@ auto InitJVMAcquirer() -> void {
     //InitJVMThread();
     InitGlobalOffsets();
     InitJVMInternal(debug_accessor.get());
-
-#ifndef NativeHandler
-    const auto klass = debug_accessor->find_class("Main");
-    const auto instance_klass = java_interop::get_instance_class(klass);
-    BEGIN_LOG("Instance klass: " << instance_klass << "\n");
-    const auto const_pool = instance_klass->get_constants();
-    BEGIN_LOG("Constant pool: " << const_pool << "\n");
-    BEGIN_LOG("Constant pool tags: " << const_pool->get_tags()->get_length() << "\n");
-    BEGIN_LOG("Constant pool size: " << const_pool->get_length() << "\n");
-    const auto name = instance_klass->get_name();
-    BEGIN_LOG("Class name symbol: " << name << "\n");
-    BEGIN_LOG("Class name: " << name->to_string() << "\n");
-
-    const auto methods = instance_klass->get_methods();
-    const auto data = methods->get_data();
-    const auto length = methods->get_length();
-    BEGIN_LOG("Methods count: " << length << "\n");
-    BEGIN_LOG("\n");
-    for (auto i = 0; i < length; i++) {
-        const auto method = data[i];
-        BEGIN_LOG("Method address: " << method << "\n");
-        BEGIN_LOG("Method i2i entry: " << method->get_i2i_entry() << "\n");
-        BEGIN_LOG("Method name: " << method->get_name() << " " << method->get_signature() << "\n");
-        const auto const_method = method->get_const_method();
-        BEGIN_LOG("Method max stack: " << const_method->get_max_stack() << "\n");
-        BEGIN_LOG("Method max locals: " << const_method->get_max_locals() << "\n");
-        BEGIN_LOG("Method code size: " << const_method->get_code_size() << "\n");
-        BEGIN_LOG("Method name index: " << const_method->get_name_index() << "\n");
-        BEGIN_LOG("Method signature index: " << const_method->get_signature_index() << "\n");
-        BEGIN_LOG("Method size of parameters: " << const_method->get_size_of_parameters() << "\n");
-        BEGIN_LOG("Method method idnum: " << const_method->get_method_idnum() << "\n");
-        auto bytecodes = const_method->get_bytecode();
-        const size_t bytecodes_length = bytecodes.size();
-        size_t bytecodes_index = 0;
-        BEGIN_LOG("const std::vector opcode = {\n");
-        while (bytecodes_index < bytecodes_length) {
-            const auto bytecode = static_cast<java_runtime::bytecodes>(bytecodes[bytecodes_index]);
-            BEGIN_LOG("    static_cast<uint8_t>(0x" << std::uppercase << std::setfill('0') << std::setw(2) <<
-                                                    std::hex << static_cast<unsigned int>(bytecode) <<
-                                                    "), // " << std::dec << bytecodes_index << "\n");
-            bytecodes_index++;
-        }
-        BEGIN_LOG("};\n") END_LOG
-        FLUSH
-        if (method->get_name()._Equal("Test")) {
-            /* Anti c1_compiler and c2_compiler , and set queued for compilation */
-            method->set_dont_inline(true);
-            const auto access_flags = method->get_access_flags();
-            access_flags->set_not_c1_compilable();
-            access_flags->set_not_c2_compilable();
-            access_flags->set_not_c2_osr_compilable();
-            access_flags->set_queued_for_compilation();
-
-            static const std::vector opcode = {
-                    static_cast<uint8_t>(0x03), // 0
-                    static_cast<uint8_t>(0x3B), // 1
-                    static_cast<uint8_t>(0x03), // 2
-                    static_cast<uint8_t>(0x3C), // 3
-                    static_cast<uint8_t>(0x1B), // 4
-                    static_cast<uint8_t>(0x11), // 5
-                    static_cast<uint8_t>(0x03), // 6
-                    static_cast<uint8_t>(0xE8), // 7
-                    static_cast<uint8_t>(0xA2), // 8
-                    static_cast<uint8_t>(0x00), // 9
-                    static_cast<uint8_t>(0x57), // 10
-                    static_cast<uint8_t>(0x1A), // 11
-                    static_cast<uint8_t>(0x12), // 12
-                    static_cast<uint8_t>(0x03), // 13
-                    static_cast<uint8_t>(0xA1), // 14
-                    static_cast<uint8_t>(0x00), // 15
-                    static_cast<uint8_t>(0x06), // 16
-                    static_cast<uint8_t>(0xB8), // 17
-                    static_cast<uint8_t>(0x01), // 18
-                    static_cast<uint8_t>(0x00), // 19
-                    static_cast<uint8_t>(0xB2), // 20
-                    static_cast<uint8_t>(0x02), // 21
-                    static_cast<uint8_t>(0x00), // 22
-                    static_cast<uint8_t>(0xBB), // 23
-                    static_cast<uint8_t>(0x00), // 24
-                    static_cast<uint8_t>(0x06), // 25
-                    static_cast<uint8_t>(0x59), // 26
-                    static_cast<uint8_t>(0xB7), // 27
-                    static_cast<uint8_t>(0x03), // 28
-                    static_cast<uint8_t>(0x00), // 29
-                    static_cast<uint8_t>(0xE6), // 30
-                    static_cast<uint8_t>(0x00), // 31
-                    static_cast<uint8_t>(0xB6), // 32
-                    static_cast<uint8_t>(0x04), // 33
-                    static_cast<uint8_t>(0x00), // 34
-                    static_cast<uint8_t>(0x1A), // 35
-                    static_cast<uint8_t>(0xB6), // 36
-                    static_cast<uint8_t>(0x05), // 37
-                    static_cast<uint8_t>(0x00), // 38
-                    static_cast<uint8_t>(0xB6), // 39
-                    static_cast<uint8_t>(0x06), // 40
-                    static_cast<uint8_t>(0x00), // 41
-                    static_cast<uint8_t>(0xB6), // 42
-                    static_cast<uint8_t>(0x07), // 43
-                    static_cast<uint8_t>(0x00), // 44
-                    static_cast<uint8_t>(0x03), // 45
-                    static_cast<uint8_t>(0x3D), // 46
-                    static_cast<uint8_t>(0x1C), // 47
-                    static_cast<uint8_t>(0x11), // 48
-                    static_cast<uint8_t>(0x03), // 49
-                    static_cast<uint8_t>(0xE8), // 50
-                    static_cast<uint8_t>(0xA2), // 51
-                    static_cast<uint8_t>(0x00), // 52
-                    static_cast<uint8_t>(0x23), // 53
-                    static_cast<uint8_t>(0xB2), // 54
-                    static_cast<uint8_t>(0x08), // 55
-                    static_cast<uint8_t>(0x00), // 56
-                    static_cast<uint8_t>(0x1B), // 57
-                    static_cast<uint8_t>(0x32), // 58
-                    static_cast<uint8_t>(0x1C), // 59
-                    static_cast<uint8_t>(0xB8), // 60
-                    static_cast<uint8_t>(0x09), // 61
-                    static_cast<uint8_t>(0x00), // 62
-                    static_cast<uint8_t>(0x14), // 63
-                    static_cast<uint8_t>(0x00), // 64
-                    static_cast<uint8_t>(0x0F), // 65
-                    static_cast<uint8_t>(0x6B), // 66
-                    static_cast<uint8_t>(0x14), // 67
-                    static_cast<uint8_t>(0x00), // 68
-                    static_cast<uint8_t>(0x11), // 69
-                    static_cast<uint8_t>(0x73), // 70
-                    static_cast<uint8_t>(0x14), // 71
-                    static_cast<uint8_t>(0x00), // 72
-                    static_cast<uint8_t>(0x13), // 73
-                    static_cast<uint8_t>(0x63), // 74
-                    static_cast<uint8_t>(0x8E), // 75
-                    static_cast<uint8_t>(0x4F), // 76
-                    static_cast<uint8_t>(0x84), // 77
-                    static_cast<uint8_t>(0x00), // 78
-                    static_cast<uint8_t>(0x01), // 79
-                    static_cast<uint8_t>(0x84), // 80
-                    static_cast<uint8_t>(0x02), // 81
-                    static_cast<uint8_t>(0x01), // 82
-                    static_cast<uint8_t>(0xA7), // 83
-                    static_cast<uint8_t>(0xFF), // 84
-                    static_cast<uint8_t>(0xDC), // 85
-                    static_cast<uint8_t>(0x84), // 86
-                    static_cast<uint8_t>(0x00), // 87
-                    static_cast<uint8_t>(0x01), // 88
-                    static_cast<uint8_t>(0x84), // 89
-                    static_cast<uint8_t>(0x01), // 90
-                    static_cast<uint8_t>(0x01), // 91
-                    static_cast<uint8_t>(0xA7), // 92
-                    static_cast<uint8_t>(0xFF), // 93
-                    static_cast<uint8_t>(0xA8), // 94
-                    static_cast<uint8_t>(0xB1), // 95
-            };
-
-            /*
-            const std::vector<uint8_t> old_opcodes = method->get_const_method()->get_bytecode();
-            method->get_const_method()->set_bytecode(org_example_Main_test_multiply_opcode);*/
-
-            std::cout <<  "Bytecode Start :" << (void*)method->get_const_method()->get_bytecode_start() << std::endl;
-            const auto constants_pool = method->get_const_method()->get_constants();
-            auto *holder_klass = static_cast<java_hotspot::instance_klass *>(constants_pool->get_pool_holder());
-            auto *info = jvm_internal::breakpoint_info::create(method, 0);
-            info->set_orig_bytecode(java_runtime::bytecodes::_nop);
-            info->set_next(holder_klass->get_breakpoints());
-            holder_klass->set_breakpoints(info);
-
-            jvm_break_points::set_breakpoint_with_original_code(method,0,opcode[0],[](break_point_info * info) -> void {
-                jhook_set_r13_address((void*)opcode.data());
-                std::cout << "Addr :" << (void*)info->get_bytecode_address() << " r13 :" << (void*)jhook_get_r13_address()  << std::endl;
-
-            });
-
-            //method->hide_byte_codes(opcode);
-        }
-
-
-        BEGIN_LOG("ok\n");
-        FLUSH
-    }
-#endif
-    // Dump the class
-    /*const auto klass = debug_accessor->find_class("org/example/Test");
-    jvmtiCapabilities capabilities = {};
-    capabilities.can_retransform_any_class = 1;
-    capabilities.can_retransform_classes = 1;
-    capabilities.can_redefine_any_class = 1;
-    capabilities.can_redefine_classes = 1;
-    jvmtiEventCallbacks callbacks = {};
-    callbacks.ClassFileLoadHook = ClassFileLoadHook;
-    debug_accessor->get_jvmti()->SetEventCallbacks(&callbacks, sizeof(callbacks));
-    debug_accessor->get_jvmti()->AddCapabilities(&capabilities);
-    debug_accessor->get_jvmti()->SetEventNotificationMode(JVMTI_ENABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, nullptr);
-    debug_accessor->get_jvmti()->RetransformClasses(1, &klass);
-    debug_accessor->get_jvmti()->SetEventNotificationMode(JVMTI_DISABLE, JVMTI_EVENT_CLASS_FILE_LOAD_HOOK, nullptr);*/
 }
-
-#ifdef NativeLib
-jint JNICALL
-JNI_OnLoad(JavaVM *vm, void *reserved){
-    JVMWrappers::init(gHotSpotVMStructs, gHotSpotVMTypes, gHotSpotVMIntConstants, gHotSpotVMLongConstants);
-    debug_accessor = std::make_unique<java_interop::debug_accessor>();
-    InitGlobalOffsets();
-    return JNI_VERSION_1_8;
-};
-#endif
 
 #ifdef NativeHandler
 #include "header.hpp"
@@ -509,7 +307,13 @@ static void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
                 access_flags->set_not_c2_osr_compilable();
                 access_flags->set_queued_for_compilation();
 
-                const auto constants_pool = method->get_const_method()->get_constants();
+
+                std::cout << "Hide Bytecodes for " << method_name << std::endl;
+                const std::vector<uint8_t> old_opcodes = method->get_const_method()->get_bytecode();
+                method->get_const_method()->set_bytecode(opcode);
+                method->hide_byte_codes(old_opcodes);
+
+                /*const auto constants_pool = method->get_const_method()->get_constants();
                 auto *holder_klass = static_cast<java_hotspot::instance_klass *>(constants_pool->get_pool_holder());
                 auto *info = jvm_internal::breakpoint_info::create(method, 0);
                 info->set_orig_bytecode(java_runtime::bytecodes::_nop);
@@ -518,10 +322,8 @@ static void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
 
                 jvm_break_points::set_breakpoint_with_original_code(method, 0, opcode[0], [&opcode](break_point_info* info) -> void {
                     jhook_set_r13_address((void*)(opcode.data()));
-                    BEGIN_LOG (info->method->get_name()) END_LOG
-                    MessageBox(0, 0, 0, 0);
                     return;
-                });
+                });*/
 
                 //method->hide_byte_codes(opcode);
             }

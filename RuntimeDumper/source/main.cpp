@@ -115,7 +115,7 @@ auto InitJVMAcquirer() -> void {
     debug_accessor = std::make_unique<java_interop::debug_accessor>();
     //InitJVMThread();
     InitGlobalOffsets();
-    static std::ofstream headerFile("header.hpp");
+    static std::ofstream headerFile("header_out.hpp");
     static std::ofstream jsonFile("classMap.json");
     auto dump = [&](const std::string &class_name,
                     const std::string &method_name)
