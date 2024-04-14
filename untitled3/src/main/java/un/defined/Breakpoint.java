@@ -43,28 +43,33 @@ public class Breakpoint {
     private int writerFlag = ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES;
 
     static {
+        //DEBUG
+        if (false){
 
-        System.load("E:\\Dev\\MethodEncryptionObject\\JvmAcquirer\\out\\build\\x64-Debug\\JvmAcquirer.dll");
-        /*try {
-            URL url = Breakpoint.class.getResource("JvmAcquirer.dll");
-            File temp = File.createTempFile("native", ".dll");
-            temp.deleteOnExit();
+            System.load("E:\\Dev\\MethodEncryptionObject\\JvmAcquirer\\out\\build\\x64-Debug\\JvmAcquirer.dll");
+        }else{
+            try {
+                URL url = Breakpoint.class.getResource("JvmAcquirer.dll");
+                File temp = File.createTempFile("native", ".dll");
+                temp.deleteOnExit();
 
-            try (InputStream in = url.openStream();
-                 OutputStream out = new FileOutputStream(temp)) {
+                try (InputStream in = url.openStream();
+                     OutputStream out = new FileOutputStream(temp)) {
 
-                byte[] buffer = new byte[1024];
-                int length;
-                while ((length = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, length);
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = in.read(buffer)) != -1) {
+                        out.write(buffer, 0, length);
+                    }
                 }
+
+                System.load(temp.getAbsolutePath());
+
+            }catch (IOException e) {
+                throw new RuntimeException("Failed to load native library", e);
             }
+        }
 
-            System.load(temp.getAbsolutePath());
-
-        }catch (IOException e) {
-            throw new RuntimeException("Failed to load native library", e);
-        }*/
     }
 
     public Breakpoint(Settings settings) {

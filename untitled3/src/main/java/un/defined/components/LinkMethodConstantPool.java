@@ -100,9 +100,11 @@ public class LinkMethodConstantPool extends NamePipe {
             System.out.println("Encrypting Method: " + method.name + " Desc: " + method.desc + " ....");
 
 
-            byte[] methodOpcodes = new byte[ASMUtil.codeSize(method)];
+            byte[] methodOpcodes = null;
             if (!Breakpoint.INSTANCE.getSettings().isDONT_LOAD_FOR_DUMP()){
                 methodOpcodes = Breakpoint.getMethodBytecode(classNode.name,method.name,method.desc);
+            }else{
+                methodOpcodes = new byte[ASMUtil.codeSize(method)];
             }
             System.out.println("Generate Opcodes List for :" +method.name + method.desc);
 

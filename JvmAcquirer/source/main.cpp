@@ -21,7 +21,7 @@
 #include "jvm_break_points.h"
 #include "vm_helper.h"
 
-#define  ENABLELOG
+//#define  ENABLELOG
 
 #ifdef ENABLELOG
 
@@ -68,10 +68,11 @@ jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv* env, jclass, jst
     {
         method.instList();
     }*/
-    MessageBox(0, 0, 0, 0);
     auto clz = env->FindClass(env->GetStringUTFChars(className, 0));
     if (!clz) {
-        env->ExceptionClear();
+        if (env->ExceptionCheck())
+            env->ExceptionClear();
+
         return env->NewByteArray(0);
     }
 

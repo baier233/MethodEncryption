@@ -95,7 +95,7 @@ public class ASMUtil implements Opcodes{
 	public static int codeSize(MethodNode methodNode) {
 		CodeSizeEvaluator evaluator = new CodeSizeEvaluator(null);
 		methodNode.accept(evaluator);
-		return evaluator.getMaxSize();
+		return evaluator.getMinSize();
 	}
 
 	public static void unboxPrimitive(String desc, InsnList list) {
