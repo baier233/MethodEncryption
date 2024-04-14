@@ -53,6 +53,7 @@ JNIEXPORT jbyteArray JNICALL Java_un_defined_Breakpoint_getMethodBytecode
 
 JNIEXPORT void JNICALL  Java_un_defined_Breakpoint_loadJar
         (JNIEnv * env, jclass, jstring jarPath);
+
 }
 
 

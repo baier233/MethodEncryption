@@ -86,6 +86,26 @@ std::string replaceMultiple(std::string str, const std::vector<std::pair<std::st
     }
     return str;
 }
+struct MethodInfo{
+    std::string methodName;
+    std::string methodSign;
+    size_t codeSize{};
+};
+
+std::map<std::string,std::vector<MethodInfo>> dataMap;
+
+#include "json.hpp"
+nlohmann::json to_json(const std::map<std::string, std::vector<MethodInfo>>& jsonStruct) {
+    nlohmann::json json_map;
+    for (const auto& kv : jsonStruct) {
+        nlohmann::json json_arr;
+        for (const MethodInfo& method : kv.second) {
+            json_arr[method.methodName + method.methodSign] = method.codeSize;
+        }
+        json_map[kv.first] = json_arr;
+    }
+    return json_map;
+}
 
 
 #include "header.hpp"
@@ -95,13 +115,19 @@ auto InitJVMAcquirer() -> void {
     debug_accessor = std::make_unique<java_interop::debug_accessor>();
     //InitJVMThread();
     InitGlobalOffsets();
-    static std::ofstream file("header.hpp");
+    static std::ofstream headerFile("header.hpp");
+    static std::ofstream jsonFile("classMap.json");
     auto dump = [&](const std::string &class_name,
                     const std::string &method_name)
     {
         auto klass = debug_accessor->get_env()->FindClass(class_name.c_str());
+        if (!klass){
+            std::cout << "Klass :" << class_name << " is not loaded!" << std::endl;
+            return;
+        }
         auto instance_klass = java_interop::get_instance_class(klass);
         if (!instance_klass) {
+            std::cout << "InstanceKlass :" << class_name << " is not loaded!" << std::endl;
             return;
         }
         const auto methods = instance_klass->get_methods();
@@ -109,10 +135,20 @@ auto InitJVMAcquirer() -> void {
         const auto length = methods->get_length();
         for (auto i = 0; i < length; i++) {
             const auto method = data[i];
+
+            MethodInfo methodInfo;
+
+            methodInfo.methodName = method->get_name();
+            methodInfo.methodSign = method->get_signature();
+
+
             const auto const_method = method->get_const_method();
             auto bytecodes = const_method->get_bytecode();
             const size_t bytecodes_length = bytecodes.size();
-            if (size_t bytecodes_index = 0;(method->get_name() + method->get_signature())._Equal(method_name)) {
+
+            methodInfo.codeSize = bytecodes_length;
+
+            if (size_t bytecodes_index = 0;(methodInfo.methodName + methodInfo.methodSign)._Equal(method_name)) {
                 static const std::vector<std::pair<std::string, std::string>> replacements = {
                         {"/", "_"},
                         {";", "_"},
@@ -120,20 +156,25 @@ auto InitJVMAcquirer() -> void {
                         {")", "_"},
                         {"[", "_"}
                 };
-                file<<"const std::vector "<< replace(class_name,"/","_")<< "_" << replaceMultiple(method_name, replacements) << " = {\n" ;
+                headerFile<<"const std::vector "<< replace(class_name,"/","_")<< "_" << replaceMultiple(method_name, replacements) << " = {\n" ;
                 while (bytecodes_index < bytecodes_length) {
                     const auto bytecode = static_cast<java_runtime::bytecodes>(bytecodes[bytecodes_index]);
-                    file << "    static_cast<uint8_t>(0x" << std::uppercase << std::setfill('0') << std::setw(2) <<
+                    headerFile << "    static_cast<uint8_t>(0x" << std::uppercase << std::setfill('0') << std::setw(2) <<
                          std::hex << static_cast<unsigned int>(bytecode) <<
                          "), // " << std::dec << bytecodes_index << "\n";
                     bytecodes_index++;
                 }
-                file << "};\n" << std::endl;
-                file.flush();
+                headerFile << "};\n" << std::endl;
+                headerFile.flush();
             }
+            dataMap[class_name].push_back(methodInfo);
         }
     };
     InitMethods(dump);
+    headerFile.close();
+
+    jsonFile << to_json(dataMap).dump(4) << std::endl;
+    jsonFile.close();
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinst_dll, const DWORD ul_reason_for_call, LPVOID lpv_reserved) {

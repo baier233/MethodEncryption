@@ -5,6 +5,7 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.commons.CodeSizeEvaluator;
 import org.objectweb.asm.tree.*;
 import un.defined.Breakpoint;
+import un.defined.config.ClassMap;
 import un.defined.config.Settings;
 import un.defined.entity.NamePipe;
 import un.defined.entity.Tuple;
@@ -104,7 +105,7 @@ public class LinkMethodConstantPool extends NamePipe {
             if (!Breakpoint.INSTANCE.getSettings().isDONT_LOAD_FOR_DUMP()){
                 methodOpcodes = Breakpoint.getMethodBytecode(classNode.name,method.name,method.desc);
             }else{
-                methodOpcodes = new byte[ASMUtil.codeSize(method)];
+                methodOpcodes = new byte[ClassMap.getCodeSize(classNode.name, method.name + method.desc)];
             }
             System.out.println("Generate Opcodes List for :" +method.name + method.desc);
 
