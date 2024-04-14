@@ -41,3 +41,5 @@ _deps
 /JvmAcquirer/out
 /NativeHandler/out
 /NativeHandler/.vs
+/RuntimeDumper/cmake-build-debug
+/RuntimeDumper/cmake-build-release

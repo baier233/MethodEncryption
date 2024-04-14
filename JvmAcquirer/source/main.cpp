@@ -58,7 +58,7 @@ JNIEXPORT void JNICALL  Java_un_defined_Breakpoint_loadJar
 
 
 
-jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv* env, jclass, jstring className , jstring methodName, jstring methodSign) {
+jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv* env, jclass, jstring className, jstring methodName, jstring methodSign) {
 
     /*auto bytes = env->GetByteArrayElements(classBytes, 0);
     auto len = env->GetArrayLength(classBytes);
@@ -68,7 +68,13 @@ jbyteArray Java_un_defined_Breakpoint_getMethodBytecode(JNIEnv* env, jclass, jst
     {
         method.instList();
     }*/
+    MessageBox(0, 0, 0, 0);
     auto clz = env->FindClass(env->GetStringUTFChars(className, 0));
+    if (!clz) {
+        env->ExceptionClear();
+        return env->NewByteArray(0);
+    }
+
     auto name = env->GetStringUTFChars(methodName,0);
     auto sign = env->GetStringUTFChars(methodSign,0);
     std::string comp(std::string (name) + std::string (sign));
@@ -132,8 +138,8 @@ auto InitGlobalOffsets() -> void {
     }
 
     /* java_lang_Class -> _klass_offset */
-    std::cout << "Klass Offset:" << global_offsets::klass_offset << std::endl;
     global_offsets::klass_offset = *static_cast<jint *>(java_lang_Class.value().get()["_klass_offset"]->address);
+    std::cout << "Klass Offset:" << global_offsets::klass_offset << std::endl;
     java_hotspot::bytecode_start_offset = java_hotspot::const_method::get_const_method_length();
 }
 

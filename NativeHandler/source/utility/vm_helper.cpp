@@ -40,7 +40,7 @@ auto vm_helper::find_vm_calls(PVOID start) -> std::vector<PVOID> {
         thread_frame_offset = *reinterpret_cast<uint32_t *>(preserve_frame_mov + 3);
         const uintptr_t operand_stack_mov = preserve_frame_mov + 7;
         /*
-                49:8987 E0030000         | mov qword ptr ds:[r15+3E0],rax
+                49:8987 E0030000         | mov qword ptr    ds:[r15+3E0],rax
             */
         thread_operand_stack_offset = *reinterpret_cast<uint32_t *>(operand_stack_mov + 3);
     }

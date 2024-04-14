@@ -23,11 +23,11 @@ public class Config {
     }
 
     public Settings parseConfig() throws IOException {
-        return new Gson().fromJson(new String(Files.readAllBytes(configFile.toPath()), StandardCharsets.UTF_8), Settings.class);
+        return new Gson().fromJson(Files.readString(configFile.toPath()), Settings.class);
     }
 
     public static String generateConfig(){
-        Settings settings = new Settings("",true,"");
+        Settings settings = new Settings("",true,false,false,"");
         return new Gson().toJson(settings,Settings.class);
     }
 }

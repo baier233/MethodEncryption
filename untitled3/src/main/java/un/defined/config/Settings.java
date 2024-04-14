@@ -4,12 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 @Getter
+@Setter
 @AllArgsConstructor
 public class Settings {
-    @Setter
     private String ANNOTATION_DESC;
-    @Setter
+
     private boolean REMOVE_ANNOTATION;
-    @Setter
+
+    private boolean DUMP_TYPE;
+
+    private boolean DONT_LOAD_FOR_DUMP;
+
     private String CLASS_HEADER_PATH;
+
 }

@@ -4,6 +4,7 @@ import me.baier.NativeHandler;
 import un.defined.components.DeleteLineOpcodes;
 import un.defined.components.LinkMethodConstantPool;
 import un.defined.config.Config;
+import un.defined.config.Settings;
 import un.defined.utility.ReflectUtil;
 
 import java.io.File;
@@ -45,8 +46,11 @@ public class Main {
         }
 
         try {
-            Breakpoint.loadJar(inputFile.getAbsolutePath());
-            new Breakpoint(new Config(configFile).parseConfig())
+            Settings settings = new Config(configFile).parseConfig();
+            if (!settings.isDONT_LOAD_FOR_DUMP()){
+                Breakpoint.loadJar(inputFile.getAbsolutePath());
+            }
+            new Breakpoint(settings)
                     .addPipeLine(new DeleteLineOpcodes("DeleteLineOpcodes"))
                     .addPipeLine(new LinkMethodConstantPool("LinkMethodConstantPool"))
                     .setInputFile(inputFile)

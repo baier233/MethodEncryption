@@ -2,11 +2,13 @@ package un.defined.components;
 
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.*;
+import org.objectweb.asm.commons.CodeSizeEvaluator;
 import org.objectweb.asm.tree.*;
 import un.defined.Breakpoint;
 import un.defined.config.Settings;
 import un.defined.entity.NamePipe;
 import un.defined.entity.Tuple;
+import un.defined.utility.ASMUtil;
 import un.defined.utility.ClassMethodFilter;
 
 import java.io.File;
@@ -29,6 +31,8 @@ public class LinkMethodConstantPool extends NamePipe {
 
     private final HashMap<String, HashMap<Tuple<String,String>, List<String>>> opcodeMap = new HashMap<>();
 
+    //<KlassName,List<Tuple<MethodName,MethodDesc>>>
+    private final HashMap<String, List<Tuple<String,String>>> methodsToDumpMap = new HashMap<>();
     private ClassReader lastClassReader = null;
 
     private ClassNode lastClassNode = null;
@@ -51,11 +55,31 @@ public class LinkMethodConstantPool extends NamePipe {
 
     @Override
     public void process(Breakpoint blastObfuscate, Tuple<ClassNode, ClassReader> tuple) throws Exception {
+        if (Breakpoint.INSTANCE.getSettings().isDUMP_TYPE()){
+
+            //List<Tuple<MethodName,MethodDesc>>
+            List<Tuple<String,String>> list = methodsToDumpMap.computeIfAbsent(tuple.getFirst().name,k -> new ArrayList<>());
+            ClassNode classNode = tuple.getFirst();
+            lastClassReader = tuple.getSecond();
+            lastClassNode = classNode;
+
+            for (MethodNode method : classNode.methods) {
+                if (!ClassMethodFilter.shouldProcess(classNode, method)) {
+                    continue;
+                }
+
+                System.out.println("Resolving Method: " + method.name + " Desc: " + method.desc + " ....");
+                list.add(new Tuple<>(method.name,method.desc));
+            }
+
+            blastObfuscate.setWriterFlag(0);
+            return;
+        }
+
         HashMap<Tuple<String,String>, List<String>> classOpcodeMap = this.opcodeMap.computeIfAbsent(tuple.getFirst().name, k -> new HashMap<>());
         ClassNode classNode = tuple.getFirst();
         lastClassReader = tuple.getSecond();
         lastClassNode = classNode;
-
         System.out.println("Defined classNode.name = " + classNode.name);
         boolean shouldProcessclinit = false;
         InsnList instructions = new InsnList();
@@ -67,7 +91,6 @@ public class LinkMethodConstantPool extends NamePipe {
             if (!ClassMethodFilter.shouldProcess(classNode, method)) {
                 continue;
             }
-            shouldProcessclinit = true;
 
             if (Breakpoint.INSTANCE.getSettings().isREMOVE_ANNOTATION()) {
 
@@ -75,8 +98,19 @@ public class LinkMethodConstantPool extends NamePipe {
                     method.invisibleAnnotations.removeIf(annotationNode -> annotationNode.desc.equals(Breakpoint.INSTANCE.getSettings().getANNOTATION_DESC()));
             }
             System.out.println("Encrypting Method: " + method.name + " Desc: " + method.desc + " ....");
-            byte[] methodOpcodes = Breakpoint.getMethodBytecode(classNode.name, method.name, method.desc);
+
+
+            byte[] methodOpcodes = new byte[ASMUtil.codeSize(method)];
+            if (!Breakpoint.INSTANCE.getSettings().isDONT_LOAD_FOR_DUMP()){
+                methodOpcodes = Breakpoint.getMethodBytecode(classNode.name,method.name,method.desc);
+            }
             System.out.println("Generate Opcodes List for :" +method.name + method.desc);
+
+            //when opcodes.length == 0 ,means that the target class cant be loaded into jvm
+            if (methodOpcodes.length == 0){
+                continue;
+            }
+
             List<String> opcodes = classOpcodeMap.computeIfAbsent(new Tuple<>(method.name,method.desc), k -> new ArrayList<>());
             for (byte opcode : methodOpcodes) {
                 opcodes.add(String.format("0x%02X", opcode));
@@ -119,6 +153,9 @@ public class LinkMethodConstantPool extends NamePipe {
                     method.instructions.set(lastAbstractInsnNode, new InsnNode(Opcodes.ARETURN));
                     break;
             }
+
+
+            shouldProcessclinit = true;
         }
 
         if(Breakpoint.INSTANCE.getSettings().isREMOVE_ANNOTATION()){
@@ -161,30 +198,52 @@ public class LinkMethodConstantPool extends NamePipe {
         header.append("#include <vector>\n");
         header.append("#include <string>\n");
 
-        initMethods.append("inline auto InitMethods(const std::function<void(const std::string& class_name,const std::string& method_name,const std::vector<uint8_t>& opcode)> inject)\n{\n");
 
-        for (String className : opcodeMap.keySet()) {
-            HashMap<Tuple<String,String>, List<String>> methodOpcodeMap = opcodeMap.get(className);
-            for (Tuple<String,String> methodNameAndSig : methodOpcodeMap.keySet()) {
-                String methodName = methodNameAndSig.getFirst();
-                String opcodeVarName = className.replaceAll("/", "_") + "_" + methodName + "_opcode";
-                List<String> opcodes = methodOpcodeMap.get(methodNameAndSig);
 
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("const std::vector ").append(opcodeVarName).append(" = {\n");
-                int i = 0;
-                for (String opcode : opcodes) {
-                    stringBuilder.append("    static_cast<uint8_t>(").append(opcode).append("),").append("// ").append(i).append("\n");
-                    i++;
-                }
-                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-                stringBuilder.append("\n};");
-                stringBuilder.append("\n");
-                header.append(stringBuilder);
-                initMethods.append("    inject(\"").append(className).append("\",\"").append(methodName).append(methodNameAndSig.getSecond()).append("\",").append(opcodeVarName).append(");\n");
+
+        if (Breakpoint.INSTANCE.getSettings().isDUMP_TYPE()){
+            initMethods.append("inline auto InitMethods(const std::function<void(const std::string& class_name,const std::string& method_name)> dump)\n{\n");
+            for (String className : methodsToDumpMap.keySet()){
+                List<Tuple<String,String>> methodList = methodsToDumpMap.get(className);
+                methodList.forEach(tuple ->
+                        initMethods.append("    dump(\"").append(className).
+                                append("\",\"").
+                                append(tuple.getFirst()).append(tuple.getSecond()).
+                                append("\");\n"));
+
 
             }
+        }else {
+            initMethods.append("inline auto InitMethods(const std::function<void(const std::string& class_name,const std::string& method_name,const std::vector<uint8_t>& opcode)> inject)\n{\n");
+            for (String className : opcodeMap.keySet()) {
+                HashMap<Tuple<String,String>, List<String>> methodOpcodeMap = opcodeMap.get(className);
+                for (Tuple<String,String> methodNameAndSig : methodOpcodeMap.keySet()) {
+
+                    String methodName = methodNameAndSig.getFirst() + methodNameAndSig.getSecond();
+                    methodName = methodName.replaceAll("/", "_").replaceAll(";", "_")
+                            .replace("(", "_").replace(")", "_")
+                            .replace("[", "_");
+
+                    String opcodeVarName = className.replaceAll("/", "_") + "_" + methodName ;
+                    List<String> opcodes = methodOpcodeMap.get(methodNameAndSig);
+
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append("const std::vector ").append(opcodeVarName).append(" = {\n");
+                    int i = 0;
+                    for (String opcode : opcodes) {
+                        stringBuilder.append("    static_cast<uint8_t>(").append(opcode).append("),").append("// ").append(i).append("\n");
+                        i++;
+                    }
+                    stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+                    stringBuilder.append("\n};");
+                    stringBuilder.append("\n");
+                    header.append(stringBuilder);
+                    initMethods.append("    inject(\"").append(className).append("\",\"").append(methodName).append(methodNameAndSig.getSecond()).append("\",").append(opcodeVarName).append(");\n");
+
+                }
+            }
         }
+
         initMethods.append("}\n");
         header.append(initMethods);
         header.append("#endif //CLASSES_H");

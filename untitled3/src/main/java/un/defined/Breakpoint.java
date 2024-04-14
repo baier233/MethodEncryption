@@ -43,7 +43,9 @@ public class Breakpoint {
     private int writerFlag = ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES;
 
     static {
-        try {
+
+        System.load("E:\\Dev\\MethodEncryptionObject\\JvmAcquirer\\out\\build\\x64-Debug\\JvmAcquirer.dll");
+        /*try {
             URL url = Breakpoint.class.getResource("JvmAcquirer.dll");
             File temp = File.createTempFile("native", ".dll");
             temp.deleteOnExit();
@@ -62,7 +64,7 @@ public class Breakpoint {
 
         }catch (IOException e) {
             throw new RuntimeException("Failed to load native library", e);
-        }
+        }*/
     }
 
     public Breakpoint(Settings settings) {
@@ -71,6 +73,7 @@ public class Breakpoint {
         System.out.println("this.settings.getANNOTATION_DESC() = " + this.settings.getANNOTATION_DESC());
         System.out.println("this.settings.isREMOVE_ANNOTATION() = " + this.settings.isREMOVE_ANNOTATION());
         System.out.println("this.settings.getCLASS_HEADER_PATH() = " + this.settings.getCLASS_HEADER_PATH());
+        System.out.println("this.settings.isDUMP_TYPE() = " + this.settings.isDUMP_TYPE());
     }
 
     public Breakpoint addPipeLine(Pipe line) {
