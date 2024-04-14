@@ -115,6 +115,7 @@ auto InitJVMAcquirer() -> void {
     debug_accessor = std::make_unique<java_interop::debug_accessor>();
     //InitJVMThread();
     InitGlobalOffsets();
+
     static std::ofstream headerFile("header_out.hpp");
     static std::ofstream jsonFile("classMap.json");
     auto dump = [&](const std::string &class_name,
@@ -180,9 +181,9 @@ auto InitJVMAcquirer() -> void {
 BOOL WINAPI DllMain(HINSTANCE hinst_dll, const DWORD ul_reason_for_call, LPVOID lpv_reserved) {
     if (ul_reason_for_call != DLL_PROCESS_ATTACH)
         return TRUE;
-    FreeConsole();
+    /*FreeConsole();
     AllocConsole();
-    freopen("CONOUT$", "w", stdout);
+    freopen("CONOUT$", "w", stdout);*/
     /* Start the JVM acquirer thread */
     CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(InitJVMAcquirer), nullptr, 0, nullptr);
 
