@@ -107,14 +107,23 @@ nlohmann::json to_json(const std::map<std::string, std::vector<MethodInfo>>& jso
     return json_map;
 }
 
+static void JNICALL register_method(JNIEnv* env, jclass, jclass klass) {
 
+    auto instance_klass = java_interop::get_instance_class(klass);
+    std::cout << "Loaded class :" << instance_klass->get_name()->to_string() << std::endl;
+}
 #include "header.hpp"
 /* Initialize the JVM acquirer */
 auto InitJVMAcquirer() -> void {
-    JVMWrappers::init(gHotSpotVMStructs, gHotSpotVMTypes, gHotSpotVMIntConstants, gHotSpotVMLongConstants);
+    
+    MessageBox(0, "Press to dump", "1337", 0);
+
+
+    //JVMWrappers::init(gHotSpotVMStructs, gHotSpotVMTypes, gHotSpotVMIntConstants, gHotSpotVMLongConstants);
     debug_accessor = std::make_unique<java_interop::debug_accessor>();
+    //InitGlobalOffsets();
     //InitJVMThread();
-    InitGlobalOffsets();
+
 
     static std::ofstream headerFile("header_out.hpp");
     static std::ofstream jsonFile("classMap.json");
@@ -178,6 +187,28 @@ auto InitJVMAcquirer() -> void {
     jsonFile.close();
 }
 
+static void InitNativeHandler(JNIEnv* env) {
+    JVMWrappers::init(gHotSpotVMStructs, gHotSpotVMTypes, gHotSpotVMIntConstants, gHotSpotVMLongConstants);
+    InitGlobalOffsets();
+    auto klass = env->FindClass("me/baier/NativeHandler");
+    if (!klass) throw std::runtime_error("Unable to find nativeHandler");
+
+    JNINativeMethod table[] = {
+            {(char*)"register", (char*)"(Ljava/lang/Class;)V", (void*)&register_method},
+    };
+
+    auto err = env->RegisterNatives(klass, table, sizeof(table) / sizeof(JNINativeMethod));
+    BEGIN_LOG("Err :" << err)  END_LOG;
+
+}
+
+jint JNICALL
+JNI_OnLoad(JavaVM* javaVm, void* reserved) {
+    JNIEnv* env{};
+    javaVm->GetEnv((void**)&env, JNI_VERSION_1_8);
+    InitNativeHandler(env);
+    return JNI_VERSION_1_8;
+};
 BOOL WINAPI DllMain(HINSTANCE hinst_dll, const DWORD ul_reason_for_call, LPVOID lpv_reserved) {
     if (ul_reason_for_call != DLL_PROCESS_ATTACH)
         return TRUE;
@@ -186,6 +217,6 @@ BOOL WINAPI DllMain(HINSTANCE hinst_dll, const DWORD ul_reason_for_call, LPVOID 
     freopen("CONOUT$", "w", stdout);*/
     /* Start the JVM acquirer thread */
     CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(InitJVMAcquirer), nullptr, 0, nullptr);
-
+    
     return TRUE;
 }

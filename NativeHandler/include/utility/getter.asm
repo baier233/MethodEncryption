@@ -151,7 +151,7 @@ jhook_get_rbp_address ENDP
 
 jhook_set_r13_address PROC
     mov r13, rcx
-    mov [rbp-40h],rcx
+    mov [rbp-38h],rcx
     ret
 jhook_set_r13_address ENDP
 

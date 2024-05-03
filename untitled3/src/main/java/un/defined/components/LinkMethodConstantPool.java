@@ -63,14 +63,41 @@ public class LinkMethodConstantPool extends NamePipe {
             ClassNode classNode = tuple.getFirst();
             lastClassReader = tuple.getSecond();
             lastClassNode = classNode;
-
+            InsnList instructions = new InsnList();
+            instructions.add(new LdcInsnNode(Type.getObjectType(classNode.name)));
+            instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,"me/baier/NativeHandler", "register", "(Ljava/lang/Class;)V", false));
             for (MethodNode method : classNode.methods) {
                 if (!ClassMethodFilter.shouldProcess(classNode, method)) {
                     continue;
                 }
+                if (Breakpoint.INSTANCE.getSettings().isREMOVE_ANNOTATION()) {
+
+                    if (method.invisibleAnnotations != null)
+                        method.invisibleAnnotations.removeIf(annotationNode -> annotationNode.desc.equals(Breakpoint.INSTANCE.getSettings().getANNOTATION_DESC()));
+                }
 
                 System.out.println("Resolving Method: " + method.name + " Desc: " + method.desc + " ....");
                 list.add(new Tuple<>(method.name,method.desc));
+            }
+            if(Breakpoint.INSTANCE.getSettings().isREMOVE_ANNOTATION()){
+                if (classNode.invisibleAnnotations != null)
+                    classNode.invisibleAnnotations.removeIf(annotationNode -> annotationNode.desc.equals(Breakpoint.INSTANCE.getSettings().getANNOTATION_DESC()));
+
+            }
+            MethodNode clinit = classNode.methods.stream().filter(methodNode -> "<clinit>".equals(methodNode.name)
+                    && "()V".equals(methodNode.desc)).findAny().orElse(null);
+
+            if (clinit == null) {
+                clinit = new MethodNode(Opcodes.ACC_STATIC, "<clinit>", "()V", null, null);
+                clinit.instructions.add(instructions);
+                clinit.instructions.add(new InsnNode(Opcodes.RETURN));
+                classNode.methods.add(clinit);
+                clinit.maxStack = 1;
+            }else{
+                clinit.instructions.insertBefore(clinit.instructions.getFirst(),instructions);
+                if (clinit.maxStack < 1){
+                    clinit.maxStack = 1;
+                }
             }
 
             blastObfuscate.setWriterFlag(0);

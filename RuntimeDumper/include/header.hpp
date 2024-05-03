@@ -3,30 +3,29 @@
 #include <functional>
 #include <vector>
 #include <string>
-inline auto InitMethods(const std::function<void(const std::string& class_name,const std::string& method_name)> dump)
+inline auto InitMethods(const std::function<void(const std::string& class_name, const std::string& method_name)> dump)
 {
-    dump("net/ay","c()V");
-    dump("net/c2","x()V");
-    dump("net/c2","y()V");
-    dump("net/c2","a(Lnet/P;)V");
-    dump("net/aZ","a(Ljava/io/DataInputStream;)V");
-    dump("net/aZ","a(Ljava/io/DataOutputStream;)V");
-    dump("net/aP","a()[B");
-    dump("net/aP","a([B)Z");
-    dump("net/aO","a(Lnet/aQ;)V");
-    dump("net/aO","a()V");
-    dump("net/aS","a(Ljava/io/DataOutputStream;)V");
-    dump("net/aV","a(Ljava/io/DataInputStream;)V");
-    dump("net/aU","a(Ljava/io/DataInputStream;)V");
-    dump("net/cR$c","a(Lnet/aQ;)V");
-    dump("net/dd","s()V");
-    dump("net/dd","a(Lnet/P;)V");
-    dump("net/dK","a(Lnet/al;)V");
-    dump("net/dK","a(Lnet/P;)V");
-    dump("net/dE","a(Lnet/aa;)V");
-    dump("net/cR","a(Lnet/P;)V");
-    dump("net/E","m()V");
-    dump("net/minecraft/client/iM","dq()V");
-    dump("net/minecraft/client/k","V()V");
+    dump("net/minecraft/client/Pi", "e()V");
+    dump("net/minecraft/client/Pi", "s()V");
+    dump("assets/minecraft/models/item/y", "u(Lassets/minecraft/models/item/QX;)V");
+    dump("assets/minecraft/models/item/v", "s(J)V");
+    dump("assets/minecraft/models/item/e", "x(SCI)V");
+    dump("assets/minecraft/models/item/a", "A(J)F");
+    dump("assets/minecraft/models/item/L", "y(J)V");
+    dump("assets/minecraft/models/item/L", "l(J)V");
+    dump("assets/minecraft/models/item/Qx", "C(Ljava/io/DataOutputStream;J)V");
+    dump("assets/minecraft/models/item/WG", "i(Lassets/minecraft/models/item/QX;)V");
+    dump("assets/minecraft/models/item/WG", "b(J)V");
+    dump("assets/minecraft/models/item/WG", "z(Lnet/minecraft/qH;J)Lassets/minecraft/models/item/i;");
+    dump("assets/minecraft/models/item/WG", "T(J)V");
+    dump("assets/minecraft/models/item/WM", "n(Lassets/minecraft/models/item/QX;)V");
+    dump("assets/minecraft/models/item/WR", "S(J)V");
+    dump("assets/minecraft/models/item/We", "Z(J)V");
+    dump("assets/minecraft/models/item/We", "u(Lassets/minecraft/models/item/QX;)V");
+    dump("assets/minecraft/models/item/Wj", "E(Lassets/minecraft/models/item/Qf;)V");
+    dump("assets/minecraft/models/item/Ww", "c(ISLjava/util/function/Consumer;S)V");
+    dump("assets/minecraft/models/item/Zb", "P(J)V");
+    dump("assets/minecraft/models/item/Za", "F(Lassets/minecraft/models/item/Qq;J)V");
+    dump("net/minecraft/client/x_", "r()V");
 }
 #endif //CLASSES_H

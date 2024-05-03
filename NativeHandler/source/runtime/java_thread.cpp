@@ -29,8 +29,9 @@ auto java_hotspot::java_thread::get_jni_envoriment() -> JNIEnv * {
     if (!_anchor_entry) {
         return {};
     }
+    constexpr uint8_t thread_function_size = 8;
     return reinterpret_cast<JNIEnv *>(reinterpret_cast<uint8_t *>(this) + _anchor_entry->offset + _java_thread_type->
-                                      size + 8);
+                                      size + thread_function_size);
 }
 
 auto java_hotspot::java_thread::get_thread_object() -> oop {

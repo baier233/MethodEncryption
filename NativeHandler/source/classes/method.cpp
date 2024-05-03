@@ -177,7 +177,7 @@ auto java_hotspot::method::remove_break_point(const uintptr_t offset) -> void {
 auto java_hotspot::method::remove_all_break_points() -> void {
     jvm_break_points::remove_all_breakpoints(this);
 }
-
+#include "magic_enum.hpp"
 auto java_hotspot::method::hide_byte_codes(std::vector<uint8_t> fake_opcodes) -> void {
     const size_t bytecode_size = get_const_method()->get_bytecode_size();
     if (const size_t fake_opcodes_size = fake_opcodes.size(); fake_opcodes_size != bytecode_size) {
@@ -186,15 +186,18 @@ auto java_hotspot::method::hide_byte_codes(std::vector<uint8_t> fake_opcodes) ->
     int hide_size = 0;
     const auto constants_pool = get_const_method()->get_constants();
     auto *holder_klass = static_cast<instance_klass *>(constants_pool->get_pool_holder());
-
+    std::cout << "bytecode_size :" << bytecode_size << std::endl;
     while (hide_size < bytecode_size) {
         /* Fake breakpoint */
+        std::cout << "Hide Size :" << hide_size << std::endl;
         const auto bytecode = std::make_unique<java_runtime::bytecode>(
                 get_const_method()->get_bytecode_start() + hide_size);
-
+        using namespace java_runtime;
+        
+        
         const auto fake_opcode = static_cast<java_runtime::bytecodes>(fake_opcodes[hide_size]);
         if (const auto opcode = bytecode->get_opcode();opcode == java_runtime::bytecodes::_fast_aldc_w ||
-        opcode == java_runtime::bytecodes::_fast_aldc
+        opcode == java_runtime::bytecodes::_fast_aldc || opcode == java_runtime::bytecodes::_invokedynamic ||opcode == java_runtime::bytecodes::_lxor || opcode == java_runtime::bytecodes::_getstatic || opcode == java_runtime::bytecodes::_iload_1 || opcode == bytecodes::_ldc2_w || opcode == bytecodes::_lload_1 || opcode == bytecodes::_dup2 || opcode == bytecodes::_lstore_1 || opcode == bytecodes::_lstore_3 
                 ) {
             hide_size += bytecode->get_length();
             continue;
@@ -203,22 +206,55 @@ auto java_hotspot::method::hide_byte_codes(std::vector<uint8_t> fake_opcodes) ->
         info->set_orig_bytecode(java_runtime::bytecodes::_nop);
         info->set_next(holder_klass->get_breakpoints());
         holder_klass->set_breakpoints(info);
-
+        if (bytecode.get()->get_opcode() == java_runtime::bytecodes::_breakpoint)
+        {
+            MessageBox(0, "There is an error.", 0, 0);
+        }
+        std::cout << "Bytecode :" << static_cast<int>(bytecode.get()->get_opcode()) << std::endl;
         /* True breakpoint */
         const auto original_length = bytecode->get_length();
         //std::cout << "0x" << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(bytecode->get_opcode())
           //        << " -> " << std::dec << bytecode->get_length() << std::endl;
-        jvm_break_points::set_breakpoint(this, hide_size, [](auto *) -> void {
+        jvm_break_points::set_breakpoint(this, hide_size, [](break_point_info * info) -> void {
+            
+            std::cout << "Dispatching " << static_cast<int>(jvm_break_points::original_bytecodes[info->get_bytecode_address()]) << " :" <<  magic_enum::enum_name(static_cast<java_runtime::bytecodes>(jvm_break_points::original_bytecodes[info->get_bytecode_address()])) << std::endl;;
         });
-        hide_size += original_length;
+        hide_size += original_length ;
     }
 }
 
-auto java_hotspot::method::set_dont_inline(const bool dont_inline) -> void {
-    static VMStructEntry *_intrinsic_id_entry = JVMWrappers::find_type_fields("Method").value().get()["_intrinsic_id"];
-    if (!_intrinsic_id_entry) return;
-    *(reinterpret_cast<uint8_t *>(this) + _intrinsic_id_entry->offset + 5) = dont_inline;
+auto java_hotspot::method::get_flags() -> unsigned short*
+{
+    if (!this) return nullptr;
+    static VMStructEntry* vm_entry = JVMWrappers::find_type_fields("Method").value().get()["_flags"];
+    if (!vm_entry)
+        return nullptr;
+    return (unsigned short*)((uint8_t*)this + vm_entry->offset);
 }
+
+
+auto java_hotspot::method::set_dont_inline(bool enabled) -> void
+{
+    unsigned short* _flags = get_flags();
+    if (!_flags)
+    {
+        static VMStructEntry* vm_entry = JVMWrappers::find_type_fields("Method").value().get()["_intrinsic_id"];
+        if (!vm_entry) return;
+        constexpr uintptr_t relative_offset_from_intrinsic_id = 1;
+        unsigned char* flags = ((uint8_t*)this + vm_entry->offset + relative_offset_from_intrinsic_id);
+        if (enabled)
+            *flags |= (1 << 3);
+        else
+            *flags &= ~(1 << 3);
+        return;
+    }
+
+    if (enabled)
+        *_flags |= _dont_inline;
+    else
+        *_flags &= ~_dont_inline;
+}
+
 
 auto java_hotspot::method::get_access_flags() -> jvm_internal::access_flags * {
     static VMStructEntry *_access_flags_entry = JVMWrappers::find_type_fields("Method").value().get()["_access_flags"];

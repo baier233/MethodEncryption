@@ -43,3 +43,6 @@ _deps
 /NativeHandler/.vs
 /RuntimeDumper/cmake-build-debug
 /RuntimeDumper/cmake-build-release
+/RuntimeDumper/out
+/RuntimeDumper/.vs
+/RuntimeDumper/.idea

@@ -19,7 +19,7 @@ namespace java_runtime {
     }
 
     int bytecode::get_length() const {
-        return static_cast<int>(jvm_byte_code::bytecode_lengths[static_cast<unsigned int>(this->get_opcode())]);
+        return jvm_byte_code::bytecode_lengths[static_cast<unsigned int>(this->get_opcode())] & 0xF;
     }
 
     int bytecode::get_stack_consumption() const {

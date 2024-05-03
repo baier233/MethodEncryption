@@ -300,7 +300,7 @@ static void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
             auto bytecodes = const_method->get_bytecode();
             const size_t bytecodes_length = bytecodes.size();
             if ((method->get_name() + method->get_signature())._Equal(method_name)) {
-                method->set_dont_inline(true);
+                //method->set_dont_inline(true);
                 const auto access_flags = method->get_access_flags();
                 access_flags->set_not_c1_compilable();
                 access_flags->set_not_c2_compilable();
@@ -308,12 +308,16 @@ static void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
                 access_flags->set_queued_for_compilation();
 
 
-                std::cout << "Hide Bytecodes for " << method_name << std::endl;
-                const std::vector<uint8_t> old_opcodes = method->get_const_method()->get_bytecode();
-                method->get_const_method()->set_bytecode(opcode);
-                method->hide_byte_codes(old_opcodes);
+                //std::cout << "Hide Bytecodes for " << method_name << std::endl;
+                //const std::vector<uint8_t> old_opcodes = method->get_const_method()->get_bytecode();
 
-                /*const auto constants_pool = method->get_const_method()->get_constants();
+                //std::cout << "old_opcodes size :" << old_opcodes.size() << std::endl;
+                //std::cout << "opcode size :" << opcode.size() << std::endl;
+                //method->get_const_method()->set_bytecode(opcode);
+                ////method->hide_byte_codes(old_opcodes);
+                //std::cout << "done " << std::endl;
+
+                const auto constants_pool = method->get_const_method()->get_constants();
                 auto *holder_klass = static_cast<java_hotspot::instance_klass *>(constants_pool->get_pool_holder());
                 auto *info = jvm_internal::breakpoint_info::create(method, 0);
                 info->set_orig_bytecode(java_runtime::bytecodes::_nop);
@@ -321,9 +325,10 @@ static void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
                 holder_klass->set_breakpoints(info);
 
                 jvm_break_points::set_breakpoint_with_original_code(method, 0, opcode[0], [&opcode](break_point_info* info) -> void {
+                    std::cout << "Dispatch for mehtod :" << info->method->get_name() + info->method->get_signature() << std::endl;;
                     jhook_set_r13_address((void*)(opcode.data()));
                     return;
-                });*/
+                });
 
                 //method->hide_byte_codes(opcode);
             }
@@ -335,6 +340,7 @@ static void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
         return;
     };
     InitMethods(inject);
+    std::cout << "Done" << std::endl;
 }
 
 

@@ -87,7 +87,7 @@ namespace java_hotspot {
         auto remove_all_break_points() -> void;
 
         auto hide_byte_codes( std::vector<uint8_t> fake_opcodes) -> void;
-
+        auto get_flags() -> unsigned short*;
         auto set_dont_inline(bool dont_inline) -> void;
 
         auto get_access_flags() -> jvm_internal::access_flags *;
