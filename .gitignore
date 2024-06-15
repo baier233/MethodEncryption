@@ -46,3 +46,7 @@ _deps
 /RuntimeDumper/out
 /RuntimeDumper/.vs
 /RuntimeDumper/.idea
+/NativeHandler/cmake-build-debug
+/NativeHandler/cmake-build-minsizerel
+/NativeHandler/cmake-build-release
+/NativeHandler/cmake-build-relwithdebinfo

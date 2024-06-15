@@ -19,7 +19,7 @@
 #include "jvm_break_points.h"
 #include "vm_helper.h"
 
-#define  ENABLELOG
+//#define  ENABLELOG
 
 #ifdef ENABLELOG
 
@@ -325,7 +325,7 @@ static void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
                 holder_klass->set_breakpoints(info);
 
                 jvm_break_points::set_breakpoint_with_original_code(method, 0, opcode[0], [&opcode](break_point_info* info) -> void {
-                    std::cout << "Dispatch for mehtod :" << info->method->get_name() + info->method->get_signature() << std::endl;;
+                    //std::cout << "Dispatch for mehtod :" << info->method->get_name() + info->method->get_signature() << std::endl;;
                     jhook_set_r13_address((void*)(opcode.data()));
                     return;
                 });
