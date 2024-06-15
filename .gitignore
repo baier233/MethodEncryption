@@ -50,3 +50,5 @@ _deps
 /NativeHandler/cmake-build-minsizerel
 /NativeHandler/cmake-build-release
 /NativeHandler/cmake-build-relwithdebinfo
+/JvmAcquirer/cmake-build-debug
+/JvmAcquirer/cmake-build-release

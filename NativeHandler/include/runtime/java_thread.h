@@ -7,6 +7,7 @@
 
 #include "oop.h"
 #include "../include_header.h"
+#include "vm_helper.h"
 
 namespace java_hotspot {
     class thread_base {
@@ -17,6 +18,13 @@ namespace java_hotspot {
         auto get_next() -> java_thread *;
 
         auto get_jni_envoriment() -> JNIEnv *;
+
+        inline uintptr_t* get_operand_stack( )
+        {
+            if(!vm_helper::thread_operand_stack_offset)
+                throw std::runtime_error( "JavaThread::preserved_sp_offset is not initialized" );
+            return *(uintptr_t**)( (uintptr_t)this + vm_helper::thread_operand_stack_offset );
+        }
 
         auto get_thread_object() -> oop;
 

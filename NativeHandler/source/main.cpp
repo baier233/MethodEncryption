@@ -108,49 +108,8 @@ auto InitGlobalOffsets() -> void {
     java_hotspot::bytecode_start_offset = java_hotspot::const_method::get_const_method_length();
 }
 
-inline std::string make_local_pattern = R"(
-    48 83 7C 24 38 00
-    )";
-
-inline std::string oop_store_pattern = R"(
-    48 83 7C 24 48 00
-    )";
-
-inline std::string thread_index_pattern = R"(
-    B8 70 00 00 00 48 8B 5C 24 30 48 8B 74 24 38 48 83 C4 20 5F C3
-    )";
-
-
 /* Initialize the JVM internal */
 auto InitJVMInternal(const java_interop::debug_accessor *debug_accessor) -> void {
-#ifndef NativeLib
-    /* Get JNIHandles::make_local(oop obj) address */
-#ifndef NativeHandler
-    const auto steal_env = debug_accessor->get_env();
-    auto start_address = reinterpret_cast<uintptr_t>(steal_env->functions->GetStaticObjectField);
-    const auto make_local_address = scan(make_local_pattern.c_str(), start_address, start_address + 0x1024) - 5;
-    if (!make_local_address) {
-
-        throw std::runtime_error("Failed to find JNIHandles::make_local(oop obj) address");
-
-    }
-    {
-        java_hotspot::jni_handles_internal::make_local = reinterpret_cast<make_local_t>(get_absolute_address(
-                make_local_address));
-        BEGIN_LOG("JNIHandles::make_local(oop obj) address: " << reinterpret_cast<void *>(
-                java_hotspot::jni_handles_internal::make_local)) END_LOG
-    }
-
-    /* Get oop_store address  */
-    start_address = reinterpret_cast<uintptr_t>(steal_env->functions->SetStaticObjectField);
-    const auto call_address = scan(oop_store_pattern.c_str(), start_address, start_address + 0x512) - 12;
-    if (!call_address) {
-        throw std::runtime_error("Failed to find oop_store address");
-    }
-    java_hotspot::jni_handles_internal::oop_store = reinterpret_cast<oop_store_t>(get_absolute_address(call_address));
-    BEGIN_LOG("oop_store(int, oop) address: " << reinterpret_cast<void *>(
-            java_hotspot::jni_handles_internal::oop_store)) END_LOG
-#endif
 
     /* Any class */
     const auto integer_klass = debug_accessor->find_class("java/lang/Integer");
@@ -214,56 +173,9 @@ auto InitJVMInternal(const java_interop::debug_accessor *debug_accessor) -> void
                                                        jvm_break_points::original_bytecode_handler);
     jvm_break_points::breakpoint_hook.start_hook();
     jvm_break_points::original_bytecode_hook.start_hook();
-#ifndef NativeHandler
-    /* Resolve_ldc */
-    {
-        const uintptr_t fast_aldc_method = *reinterpret_cast<uintptr_t *>(
-                dispatch_table + static_cast<uint8_t>(java_runtime::bytecodes::_fast_aldc_w) * 8);
-        if (!fast_aldc_method) {
-            BEGIN_LOG("Failed to find fast_aldc method") END_LOG
-        }
-        BEGIN_LOG("Fast aldc method: " << reinterpret_cast<void *>(fast_aldc_method)) END_LOG
-
-        const std::vector<void *> fast_aldc_vm_calls = vm_helper::find_vm_calls(
-                reinterpret_cast<PVOID>(fast_aldc_method));
-        if (fast_aldc_vm_calls.size() < 1) {
-            BEGIN_LOG("Failed to find fast_aldc VM calls") END_LOG
-        }
-        BEGIN_LOG("VM calls: " << fast_aldc_vm_calls.size()) END_LOG
-
-        BEGIN_LOG("Resolve_ldc address: " << fast_aldc_vm_calls[0]) END_LOG
-    }
-#endif
-#endif
 }
 
 
-/* Initialize the JVM thread */
-auto InitJVMThread() -> void {
-#ifndef NativeLib
-    /* Get ThreadLocalStorage -> _thread_index(address) */
-    const auto module = GetModuleHandleA("jvm.dll");
-    const auto _thread_index_address = pattern_scan(
-            module,
-            {
-                    0xB8, 0x70, 0x00, 0x00, 0x00, 0x48, 0x8B, 0x5C, 0x24, 0x30,
-                    0x48, 0x8B, 0x74, 0x24, 0x38, 0x48,
-                    0x83, 0xC4, 0x20, 0x5F, 0xC3
-            }, "xxxxxxxxxxxxxxxxxxxxx", 0
-    );
-    const auto mov_address = _thread_index_address + 21;
-    /* 00000000740F7ABD         | 8B0D A5D49000     | mov ecx,dword ptr ds:[<private: static int ThreadLocalStorage::_thread_index>]                   */
-    /* 00000000740F7AC3         | FF15 07B95600     | call qword ptr ds:[<&TlsGetValue>]                                                               */
-    const auto mov_content_address = mov_address + 2;
-    const uint32_t offset = *reinterpret_cast<uint32_t *>(mov_content_address);
-    const auto absolute_address = mov_content_address + offset + 4;
-    java_hotspot::thread_local_storage_internal::_thread_index_address_ = reinterpret_cast<uint8_t *>(
-            absolute_address);
-    BEGIN_LOG("Thread index address: " << reinterpret_cast<void *>(
-            java_hotspot::thread_local_storage_internal::_thread_index_address_)) END_LOG
-
-#endif
-}
 
 /* Initialize the JVM acquirer */
 auto InitJVMAcquirer() -> void {
@@ -272,89 +184,75 @@ auto InitJVMAcquirer() -> void {
     //InitJVMThread();
     InitGlobalOffsets();
     InitJVMInternal(debug_accessor.get());
-}
 
-#ifdef NativeHandler
-#include "header.hpp"
-#endif
 
-#ifdef NativeHandler
-
-static void JNICALL register_method(JNIEnv* env,jclass,jclass klass){
-    BEGIN_LOG("Enter Register") END_LOG
-    auto inject = [&](const std::string& class_name,
-                     const std::string& method_name,
-                     const std::vector<uint8_t>& opcode)
     {
-        auto instance_klass = java_interop::get_instance_class(klass);
-        if (instance_klass->get_name()->to_string() != class_name){
-            return;
-        }
-        BEGIN_LOG("Resolving Class For :" << class_name) END_LOG
-        const auto methods = instance_klass->get_methods();
-        const auto data = methods->get_data();
-        const auto length = methods->get_length();
-        for (auto i = 0; i < length; i++) {
-            const auto method = data[i];
-            const auto const_method = method->get_const_method();
-            auto bytecodes = const_method->get_bytecode();
-            const size_t bytecodes_length = bytecodes.size();
-            if ((method->get_name() + method->get_signature())._Equal(method_name)) {
-                //method->set_dont_inline(true);
-                const auto access_flags = method->get_access_flags();
-                access_flags->set_not_c1_compilable();
-                access_flags->set_not_c2_compilable();
-                access_flags->set_not_c2_osr_compilable();
-                access_flags->set_queued_for_compilation();
+        const auto klass = debug_accessor->find_class("Main");
+        const auto instance_klass = java_interop::get_instance_class(klass);
 
 
-                //std::cout << "Hide Bytecodes for " << method_name << std::endl;
-                //const std::vector<uint8_t> old_opcodes = method->get_const_method()->get_bytecode();
+        {
+            const auto methods = instance_klass->get_methods();
+            const auto data = methods->get_data();
+            const auto length = methods->get_length();
+            for (auto i = 0; i < length; i++) {
+                const auto method = data[i];
+                const auto const_method = method->get_const_method();
 
-                //std::cout << "old_opcodes size :" << old_opcodes.size() << std::endl;
-                //std::cout << "opcode size :" << opcode.size() << std::endl;
-                //method->get_const_method()->set_bytecode(opcode);
-                ////method->hide_byte_codes(old_opcodes);
-                //std::cout << "done " << std::endl;
 
-                const auto constants_pool = method->get_const_method()->get_constants();
-                auto *holder_klass = static_cast<java_hotspot::instance_klass *>(constants_pool->get_pool_holder());
-                auto *info = jvm_internal::breakpoint_info::create(method, 0);
-                info->set_orig_bytecode(java_runtime::bytecodes::_nop);
-                info->set_next(holder_klass->get_breakpoints());
-                holder_klass->set_breakpoints(info);
+                auto bytecodes = const_method->get_bytecode();
+                const size_t bytecodes_length = bytecodes.size();
 
-                jvm_break_points::set_breakpoint_with_original_code(method, 0, opcode[0], [&opcode](break_point_info* info) -> void {
-                    //std::cout << "Dispatch for mehtod :" << info->method->get_name() + info->method->get_signature() << std::endl;;
-                    jhook_set_r13_address((void*)(opcode.data()));
-                    return;
-                });
+                if (method->get_name()._Equal("Test")) {
+                    method->set_dont_inline(true);
+                    const auto access_flags = method->get_access_flags();
+                    access_flags->set_not_c1_compilable();
+                    access_flags->set_not_c2_compilable();
+                    access_flags->set_not_c2_osr_compilable();
+                    access_flags->set_queued_for_compilation();
 
-                //method->hide_byte_codes(opcode);
+                    const auto constants_pool = method->get_const_method()->get_constants();
+                    auto *holder_klass = static_cast<java_hotspot::instance_klass *>(constants_pool->get_pool_holder());
+
+
+                    int bytecodes_index = 0;
+                    while (bytecodes_index < bytecodes_length) {
+                        const auto bytecode = static_cast<java_runtime::bytecodes>(bytecodes[bytecodes_index]);
+
+                        if (bytecode == java_runtime::bytecodes::_invokevirtual){
+
+                            //spoofing original bytecode
+                            {
+                                std::cout << "setting breakpoint for " << bytecodes_index << std::endl;
+                                auto *info = jvm_internal::breakpoint_info::create(method, bytecodes_index);
+                                info->set_orig_bytecode(java_runtime::bytecodes::_invokevirtual);
+                                info->set_next(holder_klass->get_breakpoints());
+                                holder_klass->set_breakpoints(info);
+                            }
+
+                            //setting bytecode and callback
+                            jvm_break_points::set_breakpoint_with_original_code(method,bytecodes_index,bytecodes[bytecodes_index], [ ]( break_point_info* bp ) -> void
+                            {
+                                //value should be the parameter eg : System.out.Println(parameter)
+                                auto value = bp->get_operand(0);
+                                auto str = debug_accessor->get_env()->GetStringUTFChars((jstring)value,0);
+                                *value = *(uintptr_t*)debug_accessor->get_env()->NewStringUTF("Replaced");
+                                std::cout << "original str :" << str << std::endl;
+                                return;
+                            });
+                        }
+                        bytecodes_index+= static_cast<int>(jvm_byte_code::bytecode_lengths[static_cast<unsigned int>(bytecode)]);
+                    }
+
+
+
+
+                }
             }
-
-
-            
-        
         }
-        return;
-    };
-    InitMethods(inject);
-    std::cout << "Done" << std::endl;
-}
+    }
 
 
-static void InitNativeHandler(){
-    auto env = debug_accessor->get_env();
-    auto klass = env->FindClass("me/baier/NativeHandler");
-    if(!klass) throw std::runtime_error("Unable to find nativeHandler");
-
-    JNINativeMethod table[] = {
-            {(char*)"register", (char*)"(Ljava/lang/Class;)V", (void *) &register_method},
-    };
-
-    auto err = env->RegisterNatives(klass,table,sizeof(table) / sizeof(JNINativeMethod));
-    BEGIN_LOG("Err :" << err)  END_LOG;
 
 }
 
@@ -362,21 +260,6 @@ jint JNICALL
 JNI_OnLoad(JavaVM *javaVm, void *reserved){
     java_interop::javaVM = javaVm;
     InitJVMAcquirer();
-    InitNativeHandler();
     return JNI_VERSION_1_8;
 };
-#endif
 
-
-#ifdef DEBUG
-
-BOOL WINAPI DllMain(HINSTANCE hinst_dll, const DWORD ul_reason_for_call, LPVOID lpv_reserved) {
-    if (ul_reason_for_call != DLL_PROCESS_ATTACH)
-        return TRUE;
-
-    /* Start the JVM acquirer thread */
-    //CreateThread(nullptr, 0, reinterpret_cast<LPTHREAD_START_ROUTINE>(InitJVMAcquirer), nullptr, 0, nullptr);
-
-    return TRUE;
-}
-#endif

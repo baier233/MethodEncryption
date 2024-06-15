@@ -29,6 +29,13 @@ public:
     [[nodiscard]] auto get_bytecode() const -> java_runtime::bytecode *;
 
     [[nodiscard]] auto get_parameters() const -> uintptr_t;
+    inline uintptr_t* get_operand( int i )
+    {
+        if(!this->java_thread)
+            return nullptr;
+        uintptr_t* operand_stack = this->java_thread->get_operand_stack( );
+        return (uintptr_t*)(operand_stack + i);
+    }
 
     java_hotspot::method *method;
 
